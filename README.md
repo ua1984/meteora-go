@@ -1,6 +1,6 @@
 # Meteora Go SDK
 
-[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/ua1984/meteora-go/test.yml?branch=main&style=flat-square)](https://github.com/ua1984/meteora-go/workflows/test.yml)
+[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/ua1984/meteora-go/test.yml?branch=main&style=flat-square)](https://github.com/ua1984/meteora-go/actions/workflows/test.yml)
 [![GoDoc](https://pkg.go.dev/badge/mod/github.com/ua1984/meteora-go)](https://pkg.go.dev/mod/github.com/ua1984/meteora-go)
 [![Go Report Card](https://goreportcard.com/badge/github.com/ua1984/meteora-go)](https://goreportcard.com/report/github.com/ua1984/meteora-go)
 [![Release](https://img.shields.io/github/release/ua1984/meteora-go.svg?style=flat-square)](https://github.com/ua1984/meteora-go/releases/latest)
