@@ -28,4 +28,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Refactored client test files to use external test packages for better encapsulation
 
-[1.0.0]: https://github.com/ua1984/meteora-go/commit/8559c71f860dd0a7a099ff6b86b44c73b8dfabd2
+[1.0.0]: https://github.com/ua1984/meteora-go/commit/7fcde5e295143aca2565a255337cc4bd2ba9e73a
