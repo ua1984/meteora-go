@@ -1,6 +1,7 @@
 package dynamicvault_test
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
@@ -73,7 +74,7 @@ func (s *DynamicVaultClientTestSuite) TestListVaultInfo() {
 			client := dynamicvault.NewClient(httpClient)
 
 			// Act
-			resp, err := client.ListVaultInfo(s.T().Context())
+			resp, err := client.ListVaultInfo(context.TODO())
 
 			// Assert
 			if tt.wantErr {
@@ -117,7 +118,7 @@ func (s *DynamicVaultClientTestSuite) TestListVaultAddresses() {
 			client := dynamicvault.NewClient(httpClient)
 
 			// Act
-			resp, err := client.ListVaultAddresses(s.T().Context())
+			resp, err := client.ListVaultAddresses(context.TODO())
 
 			// Assert
 			if tt.wantErr {
@@ -161,7 +162,7 @@ func (s *DynamicVaultClientTestSuite) TestGetVaultState() {
 			client := dynamicvault.NewClient(httpClient)
 
 			// Act
-			resp, err := client.GetVaultState(s.T().Context(), tt.tokenMint)
+			resp, err := client.GetVaultState(context.TODO(), tt.tokenMint)
 
 			// Assert
 			if tt.wantErr {
@@ -204,7 +205,7 @@ func (s *DynamicVaultClientTestSuite) TestGetAPYState() {
 			client := dynamicvault.NewClient(httpClient)
 
 			// Act
-			resp, err := client.GetAPYState(s.T().Context(), tt.tokenMint)
+			resp, err := client.GetAPYState(context.TODO(), tt.tokenMint)
 
 			// Assert
 			if tt.wantErr {
@@ -252,7 +253,7 @@ func (s *DynamicVaultClientTestSuite) TestGetAPYByTimeRange() {
 			client := dynamicvault.NewClient(httpClient)
 
 			// Act
-			resp, err := client.GetAPYByTimeRange(s.T().Context(), tt.tokenMint, tt.start, tt.end)
+			resp, err := client.GetAPYByTimeRange(context.TODO(), tt.tokenMint, tt.start, tt.end)
 
 			// Assert
 			if tt.wantErr {
@@ -298,7 +299,7 @@ func (s *DynamicVaultClientTestSuite) TestGetVirtualPrice() {
 			client := dynamicvault.NewClient(httpClient)
 
 			// Act
-			resp, err := client.GetVirtualPrice(s.T().Context(), tt.tokenMint, tt.strategy)
+			resp, err := client.GetVirtualPrice(context.TODO(), tt.tokenMint, tt.strategy)
 
 			// Assert
 			if tt.wantErr {

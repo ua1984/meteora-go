@@ -1,6 +1,7 @@
 package httpclient
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
@@ -92,7 +93,7 @@ func (s *HTTPClientTestSuite) TestGet() {
 			var result map[string]string
 
 			// Act
-			err := client.Get(s.T().Context(), tt.path, tt.query, &result)
+			err := client.Get(context.TODO(), tt.path, tt.query, &result)
 
 			// Assert
 			if tt.wantErr {
@@ -157,7 +158,7 @@ func (s *HTTPClientTestSuite) TestPost() {
 			var result map[string]string
 
 			// Act
-			err := client.Post(s.T().Context(), tt.path, tt.query, &result)
+			err := client.Post(context.TODO(), tt.path, tt.query, &result)
 
 			// Assert
 			if tt.wantErr {

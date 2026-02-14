@@ -1,6 +1,7 @@
 package stake2earn_test
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
@@ -72,7 +73,7 @@ func (s *Stake2EarnClientTestSuite) TestGetAnalytics() {
 			client := stake2earn.NewClient(httpClient)
 
 			// Act
-			resp, err := client.GetAnalytics(s.T().Context())
+			resp, err := client.GetAnalytics(context.TODO())
 
 			// Assert
 			if tt.wantErr {
@@ -121,7 +122,7 @@ func (s *Stake2EarnClientTestSuite) TestListVaults() {
 			client := stake2earn.NewClient(httpClient)
 
 			// Act
-			resp, err := client.ListVaults(s.T().Context())
+			resp, err := client.ListVaults(context.TODO())
 
 			// Assert
 			if tt.wantErr {
@@ -173,7 +174,7 @@ func (s *Stake2EarnClientTestSuite) TestFilterVaults() {
 			client := stake2earn.NewClient(httpClient)
 
 			// Act
-			resp, err := client.FilterVaults(s.T().Context(), tt.params)
+			resp, err := client.FilterVaults(context.TODO(), tt.params)
 
 			// Assert
 			if tt.wantErr {
@@ -216,7 +217,7 @@ func (s *Stake2EarnClientTestSuite) TestGetVault() {
 			client := stake2earn.NewClient(httpClient)
 
 			// Act
-			resp, err := client.GetVault(s.T().Context(), tt.address)
+			resp, err := client.GetVault(context.TODO(), tt.address)
 
 			// Assert
 			if tt.wantErr {

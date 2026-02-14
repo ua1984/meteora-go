@@ -1,6 +1,7 @@
 package dammv1_test
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
@@ -43,7 +44,7 @@ func (s *ClientTestSuite) TestListPools() {
 		client := dammv1.NewClient(httpclient.New(server.URL, nil))
 
 		// Act
-		pools, err := client.ListPools(s.T().Context(), "")
+		pools, err := client.ListPools(context.TODO(), "")
 
 		// Assert
 		s.NoError(err)
@@ -59,7 +60,7 @@ func (s *ClientTestSuite) TestListPools() {
 		client := dammv1.NewClient(httpclient.New(server.URL, nil))
 
 		// Act
-		pools, err := client.ListPools(s.T().Context(), address)
+		pools, err := client.ListPools(context.TODO(), address)
 
 		// Assert
 		s.NoError(err)
@@ -96,7 +97,7 @@ func (s *ClientTestSuite) TestSearchPools() {
 		client := dammv1.NewClient(httpclient.New(server.URL, nil))
 
 		// Act
-		result, err := client.SearchPools(s.T().Context(), params)
+		result, err := client.SearchPools(context.TODO(), params)
 
 		// Assert
 		s.NoError(err)
@@ -111,7 +112,7 @@ func (s *ClientTestSuite) TestSearchPools() {
 		client := dammv1.NewClient(httpclient.New(server.URL, nil))
 
 		// Act
-		result, err := client.SearchPools(s.T().Context(), nil)
+		result, err := client.SearchPools(context.TODO(), nil)
 
 		// Assert
 		s.NoError(err)
@@ -131,7 +132,7 @@ func (s *ClientTestSuite) TestGetPoolsMetrics() {
 	client := dammv1.NewClient(httpclient.New(server.URL, nil))
 
 	// Act
-	metrics, err := client.GetPoolsMetrics(s.T().Context())
+	metrics, err := client.GetPoolsMetrics(context.TODO())
 
 	// Assert
 	s.NoError(err)
@@ -150,7 +151,7 @@ func (s *ClientTestSuite) TestListPoolConfigs() {
 	client := dammv1.NewClient(httpclient.New(server.URL, nil))
 
 	// Act
-	configs, err := client.ListPoolConfigs(s.T().Context())
+	configs, err := client.ListPoolConfigs(context.TODO())
 
 	// Assert
 	s.NoError(err)
@@ -170,7 +171,7 @@ func (s *ClientTestSuite) TestGetFeeConfig() {
 	client := dammv1.NewClient(httpclient.New(server.URL, nil))
 
 	// Act
-	configs, err := client.GetFeeConfig(s.T().Context(), configAddr)
+	configs, err := client.GetFeeConfig(context.TODO(), configAddr)
 
 	// Assert
 	s.NoError(err)
@@ -197,7 +198,7 @@ func (s *ClientTestSuite) TestListPoolsWithFarm() {
 		client := dammv1.NewClient(httpclient.New(server.URL, nil))
 
 		// Act
-		pools, err := client.ListPoolsWithFarm(s.T().Context(), params)
+		pools, err := client.ListPoolsWithFarm(context.TODO(), params)
 
 		// Assert
 		s.NoError(err)
@@ -217,7 +218,7 @@ func (s *ClientTestSuite) TestListAlphaVaults() {
 	client := dammv1.NewClient(httpclient.New(server.URL, nil))
 
 	// Act
-	vaults, err := client.ListAlphaVaults(s.T().Context())
+	vaults, err := client.ListAlphaVaults(context.TODO())
 
 	// Assert
 	s.NoError(err)
@@ -236,7 +237,7 @@ func (s *ClientTestSuite) TestListAlphaVaultConfigs() {
 	client := dammv1.NewClient(httpclient.New(server.URL, nil))
 
 	// Act
-	configs, err := client.ListAlphaVaultConfigs(s.T().Context())
+	configs, err := client.ListAlphaVaultConfigs(context.TODO())
 
 	// Assert
 	s.NoError(err)
@@ -256,7 +257,7 @@ func (s *ClientTestSuite) TestGetPoolsByVaultLP() {
 	client := dammv1.NewClient(httpclient.New(server.URL, nil))
 
 	// Act
-	pools, err := client.GetPoolsByVaultLP(s.T().Context(), address)
+	pools, err := client.GetPoolsByVaultLP(context.TODO(), address)
 
 	// Assert
 	s.NoError(err)

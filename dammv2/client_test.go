@@ -1,6 +1,7 @@
 package dammv2_test
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
@@ -82,7 +83,7 @@ func (s *DammV2ClientTestSuite) TestListPools() {
 			client := dammv2.NewClient(httpClient)
 
 			// Act
-			resp, err := client.ListPools(s.T().Context(), tt.params)
+			resp, err := client.ListPools(context.TODO(), tt.params)
 
 			// Assert
 			if tt.wantErr {
@@ -131,7 +132,7 @@ func (s *DammV2ClientTestSuite) TestListGroups() {
 			client := dammv2.NewClient(httpClient)
 
 			// Act
-			resp, err := client.ListGroups(s.T().Context(), tt.params)
+			resp, err := client.ListGroups(context.TODO(), tt.params)
 
 			// Assert
 			if tt.wantErr {
@@ -177,7 +178,7 @@ func (s *DammV2ClientTestSuite) TestGetGroup() {
 			client := dammv2.NewClient(httpClient)
 
 			// Act
-			resp, err := client.GetGroup(s.T().Context(), tt.lexicalOrderMints, tt.params)
+			resp, err := client.GetGroup(context.TODO(), tt.lexicalOrderMints, tt.params)
 
 			// Assert
 			if tt.wantErr {
@@ -220,7 +221,7 @@ func (s *DammV2ClientTestSuite) TestGetPool() {
 			client := dammv2.NewClient(httpClient)
 
 			// Act
-			resp, err := client.GetPool(s.T().Context(), tt.address)
+			resp, err := client.GetPool(context.TODO(), tt.address)
 
 			// Assert
 			if tt.wantErr {
@@ -267,7 +268,7 @@ func (s *DammV2ClientTestSuite) TestGetOHLCV() {
 			client := dammv2.NewClient(httpClient)
 
 			// Act
-			resp, err := client.GetOHLCV(s.T().Context(), tt.address, tt.params)
+			resp, err := client.GetOHLCV(context.TODO(), tt.address, tt.params)
 
 			// Assert
 			if tt.wantErr {
@@ -311,7 +312,7 @@ func (s *DammV2ClientTestSuite) TestGetVolumeHistory() {
 			client := dammv2.NewClient(httpClient)
 
 			// Act
-			resp, err := client.GetVolumeHistory(s.T().Context(), tt.address, tt.params)
+			resp, err := client.GetVolumeHistory(context.TODO(), tt.address, tt.params)
 
 			// Assert
 			if tt.wantErr {
@@ -352,7 +353,7 @@ func (s *DammV2ClientTestSuite) TestGetProtocolMetrics() {
 			client := dammv2.NewClient(httpClient)
 
 			// Act
-			resp, err := client.GetProtocolMetrics(s.T().Context())
+			resp, err := client.GetProtocolMetrics(context.TODO())
 
 			// Assert
 			if tt.wantErr {
