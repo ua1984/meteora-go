@@ -1,6 +1,6 @@
 module github.com/ua1984/meteora-go
 
-go 1.24.2
+go 1.24
 
 require github.com/stretchr/testify v1.11.1
 
