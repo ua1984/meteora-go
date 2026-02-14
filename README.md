@@ -165,7 +165,7 @@ if err != nil {
 
 ## Requirements
 
-- Go 1.18 or later
+- Go 1.21 or later
 
 ## License
 
