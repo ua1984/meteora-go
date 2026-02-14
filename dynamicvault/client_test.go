@@ -1,4 +1,4 @@
-package dynamicvault
+package dynamicvault_test
 
 import (
 	"encoding/json"
@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/suite"
+	"github.com/ua1984/meteora-go/dynamicvault"
 	"github.com/ua1984/meteora-go/internal/httpclient"
 )
 
@@ -44,7 +45,7 @@ func (s *DynamicVaultClientTestSuite) TestListVaultInfo() {
 	}{
 		{
 			name: "should successfully list vault info",
-			response: []VaultInfo{
+			response: []dynamicvault.VaultInfo{
 				{Symbol: "SOL", Pubkey: "pubkey1"},
 				{Symbol: "USDC", Pubkey: "pubkey2"},
 			},
@@ -69,7 +70,7 @@ func (s *DynamicVaultClientTestSuite) TestListVaultInfo() {
 			defer server.Close()
 
 			httpClient := httpclient.New(server.URL, nil)
-			client := NewClient(httpClient)
+			client := dynamicvault.NewClient(httpClient)
 
 			// Act
 			resp, err := client.ListVaultInfo(s.T().Context())
@@ -97,7 +98,7 @@ func (s *DynamicVaultClientTestSuite) TestListVaultAddresses() {
 	}{
 		{
 			name: "should successfully list vault addresses",
-			response: []VaultAddress{
+			response: []dynamicvault.VaultAddress{
 				{Symbol: "SOL", VaultAddress: "addr1"},
 			},
 			status:     http.StatusOK,
@@ -113,7 +114,7 @@ func (s *DynamicVaultClientTestSuite) TestListVaultAddresses() {
 			defer server.Close()
 
 			httpClient := httpclient.New(server.URL, nil)
-			client := NewClient(httpClient)
+			client := dynamicvault.NewClient(httpClient)
 
 			// Act
 			resp, err := client.ListVaultAddresses(s.T().Context())
@@ -141,7 +142,7 @@ func (s *DynamicVaultClientTestSuite) TestGetVaultState() {
 		{
 			name:      "should successfully get vault state",
 			tokenMint: "mint123",
-			response: VaultState{
+			response: dynamicvault.VaultState{
 				TokenAddress: "mint123",
 				Pubkey:       "vault123",
 			},
@@ -157,7 +158,7 @@ func (s *DynamicVaultClientTestSuite) TestGetVaultState() {
 			defer server.Close()
 
 			httpClient := httpclient.New(server.URL, nil)
-			client := NewClient(httpClient)
+			client := dynamicvault.NewClient(httpClient)
 
 			// Act
 			resp, err := client.GetVaultState(s.T().Context(), tt.tokenMint)
@@ -185,8 +186,8 @@ func (s *DynamicVaultClientTestSuite) TestGetAPYState() {
 		{
 			name:      "should successfully get APY state",
 			tokenMint: "mint123",
-			response: APYState{
-				ClosestAPY: []APYBreakdown{{StrategyName: "Strategy 1", APY: 5.5}},
+			response: dynamicvault.APYState{
+				ClosestAPY: []dynamicvault.APYBreakdown{{StrategyName: "Strategy 1", APY: 5.5}},
 			},
 			status:  http.StatusOK,
 			wantURL: "/apy_state/mint123",
@@ -200,7 +201,7 @@ func (s *DynamicVaultClientTestSuite) TestGetAPYState() {
 			defer server.Close()
 
 			httpClient := httpclient.New(server.URL, nil)
-			client := NewClient(httpClient)
+			client := dynamicvault.NewClient(httpClient)
 
 			// Act
 			resp, err := client.GetAPYState(s.T().Context(), tt.tokenMint)
@@ -233,7 +234,7 @@ func (s *DynamicVaultClientTestSuite) TestGetAPYByTimeRange() {
 			tokenMint: "mint123",
 			start:     1000,
 			end:       2000,
-			response: []APYEntry{
+			response: []dynamicvault.APYEntry{
 				{Timestamp: 1500, APY: 4.2},
 			},
 			status:  http.StatusOK,
@@ -248,7 +249,7 @@ func (s *DynamicVaultClientTestSuite) TestGetAPYByTimeRange() {
 			defer server.Close()
 
 			httpClient := httpclient.New(server.URL, nil)
-			client := NewClient(httpClient)
+			client := dynamicvault.NewClient(httpClient)
 
 			// Act
 			resp, err := client.GetAPYByTimeRange(s.T().Context(), tt.tokenMint, tt.start, tt.end)
@@ -279,7 +280,7 @@ func (s *DynamicVaultClientTestSuite) TestGetVirtualPrice() {
 			name:      "should successfully get virtual price",
 			tokenMint: "mint123",
 			strategy:  "strat123",
-			response: []VirtualPrice{
+			response: []dynamicvault.VirtualPrice{
 				{Price: "1.005", Timestamp: 12345},
 			},
 			status:  http.StatusOK,
@@ -294,7 +295,7 @@ func (s *DynamicVaultClientTestSuite) TestGetVirtualPrice() {
 			defer server.Close()
 
 			httpClient := httpclient.New(server.URL, nil)
-			client := NewClient(httpClient)
+			client := dynamicvault.NewClient(httpClient)
 
 			// Act
 			resp, err := client.GetVirtualPrice(s.T().Context(), tt.tokenMint, tt.strategy)

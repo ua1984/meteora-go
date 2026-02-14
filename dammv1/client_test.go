@@ -1,4 +1,4 @@
-package dammv1
+package dammv1_test
 
 import (
 	"encoding/json"
@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/suite"
+	"github.com/ua1984/meteora-go/dammv1"
 	"github.com/ua1984/meteora-go/internal/httpclient"
 )
 
@@ -29,7 +30,7 @@ func (s *ClientTestSuite) setupTestServer(method, wantURL string, status int, re
 }
 
 func (s *ClientTestSuite) TestListPools() {
-	wantPools := []Pool{
+	wantPools := []dammv1.Pool{
 		{PoolAddress: "pool1", PoolName: "SOL-USDC"},
 		{PoolAddress: "pool2", PoolName: "USDT-USDC"},
 	}
@@ -39,7 +40,7 @@ func (s *ClientTestSuite) TestListPools() {
 		server := s.setupTestServer(http.MethodGet, "/pools", http.StatusOK, wantPools)
 		defer server.Close()
 
-		client := NewClient(httpclient.New(server.URL, nil))
+		client := dammv1.NewClient(httpclient.New(server.URL, nil))
 
 		// Act
 		pools, err := client.ListPools(s.T().Context(), "")
@@ -55,7 +56,7 @@ func (s *ClientTestSuite) TestListPools() {
 		server := s.setupTestServer(http.MethodGet, "/pools?address="+address, http.StatusOK, wantPools[:1])
 		defer server.Close()
 
-		client := NewClient(httpclient.New(server.URL, nil))
+		client := dammv1.NewClient(httpclient.New(server.URL, nil))
 
 		// Act
 		pools, err := client.ListPools(s.T().Context(), address)
@@ -67,8 +68,8 @@ func (s *ClientTestSuite) TestListPools() {
 }
 
 func (s *ClientTestSuite) TestSearchPools() {
-	wantResult := &SearchResult{
-		Data:       []Pool{{PoolAddress: "pool1"}},
+	wantResult := &dammv1.SearchResult{
+		Data:       []dammv1.Pool{{PoolAddress: "pool1"}},
 		Page:       1,
 		TotalCount: 1,
 	}
@@ -80,7 +81,7 @@ func (s *ClientTestSuite) TestSearchPools() {
 		searchTerm := "SOL"
 		sortBy := "tvl"
 		sortOrder := "desc"
-		params := &SearchParams{
+		params := &dammv1.SearchParams{
 			Page:       &page,
 			Size:       &size,
 			SearchTerm: &searchTerm,
@@ -92,7 +93,7 @@ func (s *ClientTestSuite) TestSearchPools() {
 		server := s.setupTestServer(http.MethodGet, wantURL, http.StatusOK, wantResult)
 		defer server.Close()
 
-		client := NewClient(httpclient.New(server.URL, nil))
+		client := dammv1.NewClient(httpclient.New(server.URL, nil))
 
 		// Act
 		result, err := client.SearchPools(s.T().Context(), params)
@@ -107,7 +108,7 @@ func (s *ClientTestSuite) TestSearchPools() {
 		server := s.setupTestServer(http.MethodGet, "/pools/search", http.StatusOK, wantResult)
 		defer server.Close()
 
-		client := NewClient(httpclient.New(server.URL, nil))
+		client := dammv1.NewClient(httpclient.New(server.URL, nil))
 
 		// Act
 		result, err := client.SearchPools(s.T().Context(), nil)
@@ -120,14 +121,14 @@ func (s *ClientTestSuite) TestSearchPools() {
 
 func (s *ClientTestSuite) TestGetPoolsMetrics() {
 	// Arrange
-	wantMetrics := &PoolMetrics{
+	wantMetrics := &dammv1.PoolMetrics{
 		DynamicAMMTVL: 1000000,
 	}
 
 	server := s.setupTestServer(http.MethodGet, "/pools-metrics", http.StatusOK, wantMetrics)
 	defer server.Close()
 
-	client := NewClient(httpclient.New(server.URL, nil))
+	client := dammv1.NewClient(httpclient.New(server.URL, nil))
 
 	// Act
 	metrics, err := client.GetPoolsMetrics(s.T().Context())
@@ -139,14 +140,14 @@ func (s *ClientTestSuite) TestGetPoolsMetrics() {
 
 func (s *ClientTestSuite) TestListPoolConfigs() {
 	// Arrange
-	wantConfigs := []PoolConfig{
+	wantConfigs := []dammv1.PoolConfig{
 		{ConfigAddress: "config1", TradeFeeBPS: 25},
 	}
 
 	server := s.setupTestServer(http.MethodGet, "/pool-configs", http.StatusOK, wantConfigs)
 	defer server.Close()
 
-	client := NewClient(httpclient.New(server.URL, nil))
+	client := dammv1.NewClient(httpclient.New(server.URL, nil))
 
 	// Act
 	configs, err := client.ListPoolConfigs(s.T().Context())
@@ -159,14 +160,14 @@ func (s *ClientTestSuite) TestListPoolConfigs() {
 func (s *ClientTestSuite) TestGetFeeConfig() {
 	// Arrange
 	configAddr := "config1"
-	wantConfigs := []FeeConfig{
+	wantConfigs := []dammv1.FeeConfig{
 		{ConfigAddress: configAddr, FeePercentage: "0.25"},
 	}
 
 	server := s.setupTestServer(http.MethodGet, "/fee-config/"+configAddr, http.StatusOK, wantConfigs)
 	defer server.Close()
 
-	client := NewClient(httpclient.New(server.URL, nil))
+	client := dammv1.NewClient(httpclient.New(server.URL, nil))
 
 	// Act
 	configs, err := client.GetFeeConfig(s.T().Context(), configAddr)
@@ -177,7 +178,7 @@ func (s *ClientTestSuite) TestGetFeeConfig() {
 }
 
 func (s *ClientTestSuite) TestListPoolsWithFarm() {
-	wantPools := []Pool{
+	wantPools := []dammv1.Pool{
 		{PoolAddress: "pool1", PoolName: "SOL-USDC"},
 	}
 
@@ -185,7 +186,7 @@ func (s *ClientTestSuite) TestListPoolsWithFarm() {
 		// Arrange
 		page := 1
 		size := 10
-		params := &PaginationParams{
+		params := &dammv1.PaginationParams{
 			Page: &page,
 			Size: &size,
 		}
@@ -193,7 +194,7 @@ func (s *ClientTestSuite) TestListPoolsWithFarm() {
 		server := s.setupTestServer(http.MethodGet, "/farm?page=1&size=10", http.StatusOK, wantPools)
 		defer server.Close()
 
-		client := NewClient(httpclient.New(server.URL, nil))
+		client := dammv1.NewClient(httpclient.New(server.URL, nil))
 
 		// Act
 		pools, err := client.ListPoolsWithFarm(s.T().Context(), params)
@@ -206,14 +207,14 @@ func (s *ClientTestSuite) TestListPoolsWithFarm() {
 
 func (s *ClientTestSuite) TestListAlphaVaults() {
 	// Arrange
-	wantVaults := []AlphaVault{
+	wantVaults := []dammv1.AlphaVault{
 		{VaultAddress: "vault1"},
 	}
 
 	server := s.setupTestServer(http.MethodGet, "/alpha-vault", http.StatusOK, wantVaults)
 	defer server.Close()
 
-	client := NewClient(httpclient.New(server.URL, nil))
+	client := dammv1.NewClient(httpclient.New(server.URL, nil))
 
 	// Act
 	vaults, err := client.ListAlphaVaults(s.T().Context())
@@ -225,14 +226,14 @@ func (s *ClientTestSuite) TestListAlphaVaults() {
 
 func (s *ClientTestSuite) TestListAlphaVaultConfigs() {
 	// Arrange
-	wantConfigs := &AlphaVaultConfigs{
-		ProrataConfigs: []ProrataConfig{{Address: "config1"}},
+	wantConfigs := &dammv1.AlphaVaultConfigs{
+		ProrataConfigs: []dammv1.ProrataConfig{{Address: "config1"}},
 	}
 
 	server := s.setupTestServer(http.MethodGet, "/alpha-vault-configs", http.StatusOK, wantConfigs)
 	defer server.Close()
 
-	client := NewClient(httpclient.New(server.URL, nil))
+	client := dammv1.NewClient(httpclient.New(server.URL, nil))
 
 	// Act
 	configs, err := client.ListAlphaVaultConfigs(s.T().Context())
@@ -245,14 +246,14 @@ func (s *ClientTestSuite) TestListAlphaVaultConfigs() {
 func (s *ClientTestSuite) TestGetPoolsByVaultLP() {
 	// Arrange
 	address := "vaultLP1"
-	wantPools := []Pool{
+	wantPools := []dammv1.Pool{
 		{PoolAddress: "pool1"},
 	}
 
 	server := s.setupTestServer(http.MethodPost, "/get_pools_by_a_vault_lp?address="+address, http.StatusOK, wantPools)
 	defer server.Close()
 
-	client := NewClient(httpclient.New(server.URL, nil))
+	client := dammv1.NewClient(httpclient.New(server.URL, nil))
 
 	// Act
 	pools, err := client.GetPoolsByVaultLP(s.T().Context(), address)

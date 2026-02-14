@@ -1,4 +1,4 @@
-package dammv2
+package dammv2_test
 
 import (
 	"encoding/json"
@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/suite"
+	"github.com/ua1984/meteora-go/dammv2"
 	"github.com/ua1984/meteora-go/internal/httpclient"
 )
 
@@ -36,7 +37,7 @@ func (s *DammV2ClientTestSuite) setupTestServer(method, wantURL string, status i
 func (s *DammV2ClientTestSuite) TestListPools() {
 	tests := []struct {
 		name       string
-		params     *ListPoolsParams
+		params     *dammv2.ListPoolsParams
 		response   any
 		status     int
 		wantErr    bool
@@ -45,14 +46,14 @@ func (s *DammV2ClientTestSuite) TestListPools() {
 	}{
 		{
 			name: "should successfully list pools with params",
-			params: &ListPoolsParams{
+			params: &dammv2.ListPoolsParams{
 				Page:      ptr(1),
 				Limit:     ptr(10),
 				SortBy:    ptr("tvl"),
 				SortOrder: ptr("desc"),
 			},
-			response: PaginatedResponse[Pool]{
-				Data:        []Pool{{Address: "pool1"}, {Address: "pool2"}},
+			response: dammv2.PaginatedResponse[dammv2.Pool]{
+				Data:        []dammv2.Pool{{Address: "pool1"}, {Address: "pool2"}},
 				Total:       2,
 				CurrentPage: 1,
 				PageSize:    10,
@@ -78,7 +79,7 @@ func (s *DammV2ClientTestSuite) TestListPools() {
 			defer server.Close()
 
 			httpClient := httpclient.New(server.URL, nil)
-			client := NewClient(httpClient)
+			client := dammv2.NewClient(httpClient)
 
 			// Act
 			resp, err := client.ListPools(s.T().Context(), tt.params)
@@ -99,7 +100,7 @@ func (s *DammV2ClientTestSuite) TestListPools() {
 func (s *DammV2ClientTestSuite) TestListGroups() {
 	tests := []struct {
 		name       string
-		params     *ListGroupsParams
+		params     *dammv2.ListGroupsParams
 		response   any
 		status     int
 		wantErr    bool
@@ -108,11 +109,11 @@ func (s *DammV2ClientTestSuite) TestListGroups() {
 	}{
 		{
 			name: "should successfully list groups",
-			params: &ListGroupsParams{
+			params: &dammv2.ListGroupsParams{
 				Page: ptr(1),
 			},
-			response: PaginatedResponse[PoolGroup]{
-				Data: []PoolGroup{{GroupName: "group1"}},
+			response: dammv2.PaginatedResponse[dammv2.PoolGroup]{
+				Data: []dammv2.PoolGroup{{GroupName: "group1"}},
 			},
 			status:     http.StatusOK,
 			wantURL:    "/pools/groups?page=1",
@@ -127,7 +128,7 @@ func (s *DammV2ClientTestSuite) TestListGroups() {
 			defer server.Close()
 
 			httpClient := httpclient.New(server.URL, nil)
-			client := NewClient(httpClient)
+			client := dammv2.NewClient(httpClient)
 
 			// Act
 			resp, err := client.ListGroups(s.T().Context(), tt.params)
@@ -147,7 +148,7 @@ func (s *DammV2ClientTestSuite) TestGetGroup() {
 	tests := []struct {
 		name              string
 		lexicalOrderMints string
-		params            *GetGroupParams
+		params            *dammv2.GetGroupParams
 		response          any
 		status            int
 		wantErr           bool
@@ -157,8 +158,8 @@ func (s *DammV2ClientTestSuite) TestGetGroup() {
 		{
 			name:              "should successfully get group pools",
 			lexicalOrderMints: "mint1-mint2",
-			response: PaginatedResponse[Pool]{
-				Data: []Pool{{Address: "pool1"}},
+			response: dammv2.PaginatedResponse[dammv2.Pool]{
+				Data: []dammv2.Pool{{Address: "pool1"}},
 			},
 			status:     http.StatusOK,
 			wantURL:    "/pools/groups/mint1-mint2",
@@ -173,7 +174,7 @@ func (s *DammV2ClientTestSuite) TestGetGroup() {
 			defer server.Close()
 
 			httpClient := httpclient.New(server.URL, nil)
-			client := NewClient(httpClient)
+			client := dammv2.NewClient(httpClient)
 
 			// Act
 			resp, err := client.GetGroup(s.T().Context(), tt.lexicalOrderMints, tt.params)
@@ -201,7 +202,7 @@ func (s *DammV2ClientTestSuite) TestGetPool() {
 		{
 			name:    "should successfully get pool",
 			address: "pool123",
-			response: Pool{
+			response: dammv2.Pool{
 				Address: "pool123",
 			},
 			status:  http.StatusOK,
@@ -216,7 +217,7 @@ func (s *DammV2ClientTestSuite) TestGetPool() {
 			defer server.Close()
 
 			httpClient := httpclient.New(server.URL, nil)
-			client := NewClient(httpClient)
+			client := dammv2.NewClient(httpClient)
 
 			// Act
 			resp, err := client.GetPool(s.T().Context(), tt.address)
@@ -236,7 +237,7 @@ func (s *DammV2ClientTestSuite) TestGetOHLCV() {
 	tests := []struct {
 		name     string
 		address  string
-		params   *OHLCVParams
+		params   *dammv2.OHLCVParams
 		response any
 		status   int
 		wantErr  bool
@@ -245,11 +246,11 @@ func (s *DammV2ClientTestSuite) TestGetOHLCV() {
 		{
 			name:    "should successfully get OHLCV",
 			address: "pool123",
-			params: &OHLCVParams{
+			params: &dammv2.OHLCVParams{
 				Resolution: ptr("1H"),
 			},
-			response: OHLCVResponse{
-				Data: []OHLCV{{Timestamp: 123456}},
+			response: dammv2.OHLCVResponse{
+				Data: []dammv2.OHLCV{{Timestamp: 123456}},
 			},
 			status:  http.StatusOK,
 			wantURL: "/pools/pool123/ohlcv?resolution=1H",
@@ -263,7 +264,7 @@ func (s *DammV2ClientTestSuite) TestGetOHLCV() {
 			defer server.Close()
 
 			httpClient := httpclient.New(server.URL, nil)
-			client := NewClient(httpClient)
+			client := dammv2.NewClient(httpClient)
 
 			// Act
 			resp, err := client.GetOHLCV(s.T().Context(), tt.address, tt.params)
@@ -283,7 +284,7 @@ func (s *DammV2ClientTestSuite) TestGetVolumeHistory() {
 	tests := []struct {
 		name     string
 		address  string
-		params   *VolumeHistoryParams
+		params   *dammv2.VolumeHistoryParams
 		response any
 		status   int
 		wantErr  bool
@@ -292,8 +293,8 @@ func (s *DammV2ClientTestSuite) TestGetVolumeHistory() {
 		{
 			name:    "should successfully get volume history",
 			address: "pool123",
-			response: VolumeHistoryResponse{
-				Data: []VolumeHistory{{Timestamp: 123456}},
+			response: dammv2.VolumeHistoryResponse{
+				Data: []dammv2.VolumeHistory{{Timestamp: 123456}},
 			},
 			status:  http.StatusOK,
 			wantURL: "/pools/pool123/volume/history",
@@ -307,7 +308,7 @@ func (s *DammV2ClientTestSuite) TestGetVolumeHistory() {
 			defer server.Close()
 
 			httpClient := httpclient.New(server.URL, nil)
-			client := NewClient(httpClient)
+			client := dammv2.NewClient(httpClient)
 
 			// Act
 			resp, err := client.GetVolumeHistory(s.T().Context(), tt.address, tt.params)
@@ -333,7 +334,7 @@ func (s *DammV2ClientTestSuite) TestGetProtocolMetrics() {
 	}{
 		{
 			name: "should successfully get protocol metrics",
-			response: ProtocolMetrics{
+			response: dammv2.ProtocolMetrics{
 				TotalTVL: 1000,
 			},
 			status:  http.StatusOK,
@@ -348,7 +349,7 @@ func (s *DammV2ClientTestSuite) TestGetProtocolMetrics() {
 			defer server.Close()
 
 			httpClient := httpclient.New(server.URL, nil)
-			client := NewClient(httpClient)
+			client := dammv2.NewClient(httpClient)
 
 			// Act
 			resp, err := client.GetProtocolMetrics(s.T().Context())

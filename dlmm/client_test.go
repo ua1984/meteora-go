@@ -1,4 +1,4 @@
-package dlmm
+package dlmm_test
 
 import (
 	"context"
@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/suite"
+	"github.com/ua1984/meteora-go/dlmm"
 	"github.com/ua1984/meteora-go/internal/httpclient"
 )
 
@@ -42,34 +43,34 @@ func (s *DLMMClientTestSuite) setupTestServer(method, wantURL string, status int
 func (s *DLMMClientTestSuite) TestListPools() {
 	tests := []struct {
 		name       string
-		params     *ListPoolsParams
+		params     *dlmm.ListPoolsParams
 		status     int
 		response   any
 		wantURL    string
 		wantErr    bool
-		wantResult *PaginatedResponse[Pool]
+		wantResult *dlmm.PaginatedResponse[dlmm.Pool]
 	}{
 		{
 			name: "should successfully list pools with params",
-			params: &ListPoolsParams{
+			params: &dlmm.ListPoolsParams{
 				Page:  ptr(1),
 				Limit: ptr(10),
 			},
 			status: http.StatusOK,
-			response: PaginatedResponse[Pool]{
-				Data: []Pool{{Address: "pool1"}},
+			response: dlmm.PaginatedResponse[dlmm.Pool]{
+				Data: []dlmm.Pool{{Address: "pool1"}},
 			},
 			wantURL: "/pools?limit=10&page=1",
-			wantResult: &PaginatedResponse[Pool]{
-				Data: []Pool{{Address: "pool1"}},
+			wantResult: &dlmm.PaginatedResponse[dlmm.Pool]{
+				Data: []dlmm.Pool{{Address: "pool1"}},
 			},
 		},
 		{
 			name:       "should successfully list pools without params",
 			status:     http.StatusOK,
-			response:   PaginatedResponse[Pool]{Data: []Pool{}},
+			response:   dlmm.PaginatedResponse[dlmm.Pool]{Data: []dlmm.Pool{}},
 			wantURL:    "/pools",
-			wantResult: &PaginatedResponse[Pool]{Data: []Pool{}},
+			wantResult: &dlmm.PaginatedResponse[dlmm.Pool]{Data: []dlmm.Pool{}},
 		},
 		{
 			name:     "should return error on API failure",
@@ -85,7 +86,7 @@ func (s *DLMMClientTestSuite) TestListPools() {
 			// Arrange
 			server := s.setupTestServer(http.MethodGet, tt.wantURL, tt.status, tt.response)
 			defer server.Close()
-			client := NewClient(httpclient.New(server.URL, nil), nil)
+			client := dlmm.NewClient(httpclient.New(server.URL, nil), nil)
 
 			// Act
 			resp, err := client.ListPools(context.Background(), tt.params)
@@ -104,25 +105,25 @@ func (s *DLMMClientTestSuite) TestListPools() {
 func (s *DLMMClientTestSuite) TestListGroups() {
 	tests := []struct {
 		name       string
-		params     *ListGroupsParams
+		params     *dlmm.ListGroupsParams
 		status     int
 		response   any
 		wantURL    string
 		wantErr    bool
-		wantResult *PaginatedResponse[PoolGroup]
+		wantResult *dlmm.PaginatedResponse[dlmm.PoolGroup]
 	}{
 		{
 			name: "should successfully list groups with params",
-			params: &ListGroupsParams{
+			params: &dlmm.ListGroupsParams{
 				Page: ptr(2),
 			},
 			status: http.StatusOK,
-			response: PaginatedResponse[PoolGroup]{
-				Data: []PoolGroup{{GroupName: "SOL-USDC"}},
+			response: dlmm.PaginatedResponse[dlmm.PoolGroup]{
+				Data: []dlmm.PoolGroup{{GroupName: "SOL-USDC"}},
 			},
 			wantURL: "/pools/groups?page=2",
-			wantResult: &PaginatedResponse[PoolGroup]{
-				Data: []PoolGroup{{GroupName: "SOL-USDC"}},
+			wantResult: &dlmm.PaginatedResponse[dlmm.PoolGroup]{
+				Data: []dlmm.PoolGroup{{GroupName: "SOL-USDC"}},
 			},
 		},
 		{
@@ -139,7 +140,7 @@ func (s *DLMMClientTestSuite) TestListGroups() {
 			// Arrange
 			server := s.setupTestServer(http.MethodGet, tt.wantURL, tt.status, tt.response)
 			defer server.Close()
-			client := NewClient(httpclient.New(server.URL, nil), nil)
+			client := dlmm.NewClient(httpclient.New(server.URL, nil), nil)
 
 			// Act
 			resp, err := client.ListGroups(context.Background(), tt.params)
@@ -159,26 +160,26 @@ func (s *DLMMClientTestSuite) TestGetGroup() {
 	tests := []struct {
 		name              string
 		lexicalOrderMints string
-		params            *GetGroupParams
+		params            *dlmm.GetGroupParams
 		status            int
 		response          any
 		wantURL           string
 		wantErr           bool
-		wantResult        *PaginatedResponse[Pool]
+		wantResult        *dlmm.PaginatedResponse[dlmm.Pool]
 	}{
 		{
 			name:              "should successfully get group",
 			lexicalOrderMints: "mint1-mint2",
-			params: &GetGroupParams{
+			params: &dlmm.GetGroupParams{
 				Limit: ptr(5),
 			},
 			status: http.StatusOK,
-			response: PaginatedResponse[Pool]{
-				Data: []Pool{{Address: "poolA"}},
+			response: dlmm.PaginatedResponse[dlmm.Pool]{
+				Data: []dlmm.Pool{{Address: "poolA"}},
 			},
 			wantURL: "/pools/groups/mint1-mint2?limit=5",
-			wantResult: &PaginatedResponse[Pool]{
-				Data: []Pool{{Address: "poolA"}},
+			wantResult: &dlmm.PaginatedResponse[dlmm.Pool]{
+				Data: []dlmm.Pool{{Address: "poolA"}},
 			},
 		},
 	}
@@ -188,7 +189,7 @@ func (s *DLMMClientTestSuite) TestGetGroup() {
 			// Arrange
 			server := s.setupTestServer(http.MethodGet, tt.wantURL, tt.status, tt.response)
 			defer server.Close()
-			client := NewClient(httpclient.New(server.URL, nil), nil)
+			client := dlmm.NewClient(httpclient.New(server.URL, nil), nil)
 
 			// Act
 			resp, err := client.GetGroup(context.Background(), tt.lexicalOrderMints, tt.params)
@@ -212,15 +213,15 @@ func (s *DLMMClientTestSuite) TestGetPool() {
 		response   any
 		wantURL    string
 		wantErr    bool
-		wantResult *Pool
+		wantResult *dlmm.Pool
 	}{
 		{
 			name:       "should successfully get pool",
 			address:    "addr123",
 			status:     http.StatusOK,
-			response:   Pool{Address: "addr123"},
+			response:   dlmm.Pool{Address: "addr123"},
 			wantURL:    "/pools/addr123",
-			wantResult: &Pool{Address: "addr123"},
+			wantResult: &dlmm.Pool{Address: "addr123"},
 		},
 	}
 
@@ -229,7 +230,7 @@ func (s *DLMMClientTestSuite) TestGetPool() {
 			// Arrange
 			server := s.setupTestServer(http.MethodGet, tt.wantURL, tt.status, tt.response)
 			defer server.Close()
-			client := NewClient(httpclient.New(server.URL, nil), nil)
+			client := dlmm.NewClient(httpclient.New(server.URL, nil), nil)
 
 			// Act
 			resp, err := client.GetPool(context.Background(), tt.address)
@@ -249,26 +250,26 @@ func (s *DLMMClientTestSuite) TestGetOHLCV() {
 	tests := []struct {
 		name       string
 		address    string
-		params     *OHLCVParams
+		params     *dlmm.OHLCVParams
 		status     int
 		response   any
 		wantURL    string
 		wantErr    bool
-		wantResult *OHLCVResponse
+		wantResult *dlmm.OHLCVResponse
 	}{
 		{
 			name:    "should successfully get ohlcv with resolution",
 			address: "pool1",
-			params: &OHLCVParams{
+			params: &dlmm.OHLCVParams{
 				Resolution: ptr("1H"),
 			},
 			status: http.StatusOK,
-			response: OHLCVResponse{
-				Data: []OHLCV{{Timestamp: 1000}},
+			response: dlmm.OHLCVResponse{
+				Data: []dlmm.OHLCV{{Timestamp: 1000}},
 			},
 			wantURL: "/pools/pool1/ohlcv?resolution=1H",
-			wantResult: &OHLCVResponse{
-				Data: []OHLCV{{Timestamp: 1000}},
+			wantResult: &dlmm.OHLCVResponse{
+				Data: []dlmm.OHLCV{{Timestamp: 1000}},
 			},
 		},
 	}
@@ -278,7 +279,7 @@ func (s *DLMMClientTestSuite) TestGetOHLCV() {
 			// Arrange
 			server := s.setupTestServer(http.MethodGet, tt.wantURL, tt.status, tt.response)
 			defer server.Close()
-			client := NewClient(httpclient.New(server.URL, nil), nil)
+			client := dlmm.NewClient(httpclient.New(server.URL, nil), nil)
 
 			// Act
 			resp, err := client.GetOHLCV(context.Background(), tt.address, tt.params)
@@ -298,26 +299,26 @@ func (s *DLMMClientTestSuite) TestGetVolumeHistory() {
 	tests := []struct {
 		name       string
 		address    string
-		params     *VolumeHistoryParams
+		params     *dlmm.VolumeHistoryParams
 		status     int
 		response   any
 		wantURL    string
 		wantErr    bool
-		wantResult *VolumeHistoryResponse
+		wantResult *dlmm.VolumeHistoryResponse
 	}{
 		{
 			name:    "should successfully get volume history",
 			address: "poolX",
-			params: &VolumeHistoryParams{
+			params: &dlmm.VolumeHistoryParams{
 				Limit: ptr(20),
 			},
 			status: http.StatusOK,
-			response: VolumeHistoryResponse{
-				Data: []VolumeHistory{{Timestamp: 2000}},
+			response: dlmm.VolumeHistoryResponse{
+				Data: []dlmm.VolumeHistory{{Timestamp: 2000}},
 			},
 			wantURL: "/pools/poolX/volume/history?limit=20",
-			wantResult: &VolumeHistoryResponse{
-				Data: []VolumeHistory{{Timestamp: 2000}},
+			wantResult: &dlmm.VolumeHistoryResponse{
+				Data: []dlmm.VolumeHistory{{Timestamp: 2000}},
 			},
 		},
 	}
@@ -327,7 +328,7 @@ func (s *DLMMClientTestSuite) TestGetVolumeHistory() {
 			// Arrange
 			server := s.setupTestServer(http.MethodGet, tt.wantURL, tt.status, tt.response)
 			defer server.Close()
-			client := NewClient(httpclient.New(server.URL, nil), nil)
+			client := dlmm.NewClient(httpclient.New(server.URL, nil), nil)
 
 			// Act
 			resp, err := client.GetVolumeHistory(context.Background(), tt.address, tt.params)
@@ -350,14 +351,14 @@ func (s *DLMMClientTestSuite) TestGetProtocolMetrics() {
 		response   any
 		wantURL    string
 		wantErr    bool
-		wantResult *ProtocolMetrics
+		wantResult *dlmm.ProtocolMetrics
 	}{
 		{
 			name:       "should successfully get protocol metrics",
 			status:     http.StatusOK,
-			response:   ProtocolMetrics{TotalVolume: 999.9},
+			response:   dlmm.ProtocolMetrics{TotalVolume: 999.9},
 			wantURL:    "/stats/protocol_metrics",
-			wantResult: &ProtocolMetrics{TotalVolume: 999.9},
+			wantResult: &dlmm.ProtocolMetrics{TotalVolume: 999.9},
 		},
 	}
 
@@ -366,7 +367,7 @@ func (s *DLMMClientTestSuite) TestGetProtocolMetrics() {
 			// Arrange
 			server := s.setupTestServer(http.MethodGet, tt.wantURL, tt.status, tt.response)
 			defer server.Close()
-			client := NewClient(httpclient.New(server.URL, nil), nil)
+			client := dlmm.NewClient(httpclient.New(server.URL, nil), nil)
 
 			// Act
 			resp, err := client.GetProtocolMetrics(context.Background())
@@ -389,14 +390,14 @@ func (s *DLMMClientTestSuite) TestListAllPairs() {
 		response   any
 		wantURL    string
 		wantErr    bool
-		wantResult []LegacyPair
+		wantResult []dlmm.LegacyPair
 	}{
 		{
 			name:       "should successfully list all pairs from legacy api",
 			status:     http.StatusOK,
-			response:   []LegacyPair{{Address: "legacy1"}},
+			response:   []dlmm.LegacyPair{{Address: "legacy1"}},
 			wantURL:    "/pair/all",
-			wantResult: []LegacyPair{{Address: "legacy1"}},
+			wantResult: []dlmm.LegacyPair{{Address: "legacy1"}},
 		},
 	}
 
@@ -405,7 +406,7 @@ func (s *DLMMClientTestSuite) TestListAllPairs() {
 			// Arrange
 			server := s.setupTestServer(http.MethodGet, tt.wantURL, tt.status, tt.response)
 			defer server.Close()
-			client := NewClient(nil, httpclient.New(server.URL, nil))
+			client := dlmm.NewClient(nil, httpclient.New(server.URL, nil))
 
 			// Act
 			resp, err := client.ListAllPairs(context.Background())

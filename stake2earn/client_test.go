@@ -1,4 +1,4 @@
-package stake2earn
+package stake2earn_test
 
 import (
 	"encoding/json"
@@ -8,6 +8,7 @@ import (
 
 	"github.com/stretchr/testify/suite"
 	"github.com/ua1984/meteora-go/internal/httpclient"
+	"github.com/ua1984/meteora-go/stake2earn"
 )
 
 type Stake2EarnClientTestSuite struct {
@@ -44,7 +45,7 @@ func (s *Stake2EarnClientTestSuite) TestGetAnalytics() {
 	}{
 		{
 			name: "should successfully get analytics",
-			response: Analytics{
+			response: stake2earn.Analytics{
 				TotalFeeVaults:       5,
 				TotalStakedAmountUSD: 1234.56,
 			},
@@ -68,7 +69,7 @@ func (s *Stake2EarnClientTestSuite) TestGetAnalytics() {
 			defer server.Close()
 
 			httpClient := httpclient.New(server.URL, nil)
-			client := NewClient(httpClient)
+			client := stake2earn.NewClient(httpClient)
 
 			// Act
 			resp, err := client.GetAnalytics(s.T().Context())
@@ -97,9 +98,9 @@ func (s *Stake2EarnClientTestSuite) TestListVaults() {
 	}{
 		{
 			name: "should successfully list all vaults",
-			response: VaultListResponse{
+			response: stake2earn.VaultListResponse{
 				Total: 2,
-				Data: []Vault{
+				Data: []stake2earn.Vault{
 					{VaultAddress: "vault1"},
 					{VaultAddress: "vault2"},
 				},
@@ -117,7 +118,7 @@ func (s *Stake2EarnClientTestSuite) TestListVaults() {
 			defer server.Close()
 
 			httpClient := httpclient.New(server.URL, nil)
-			client := NewClient(httpClient)
+			client := stake2earn.NewClient(httpClient)
 
 			// Act
 			resp, err := client.ListVaults(s.T().Context())
@@ -136,7 +137,7 @@ func (s *Stake2EarnClientTestSuite) TestListVaults() {
 func (s *Stake2EarnClientTestSuite) TestFilterVaults() {
 	tests := []struct {
 		name       string
-		params     *FilterParams
+		params     *stake2earn.FilterParams
 		response   any
 		status     int
 		wantErr    bool
@@ -145,16 +146,16 @@ func (s *Stake2EarnClientTestSuite) TestFilterVaults() {
 	}{
 		{
 			name: "should successfully filter vaults with params",
-			params: &FilterParams{
+			params: &stake2earn.FilterParams{
 				Page:       ptr(1),
 				Size:       ptr(10),
 				SortBy:     ptr("total_staked_amount_usd"),
 				SortOrder:  ptr("desc"),
 				SearchTerm: ptr("SOL"),
 			},
-			response: VaultListResponse{
+			response: stake2earn.VaultListResponse{
 				Total: 1,
-				Data:  []Vault{{VaultAddress: "vault1"}},
+				Data:  []stake2earn.Vault{{VaultAddress: "vault1"}},
 			},
 			status:     http.StatusOK,
 			wantURL:    "/vault/filter?page=1&search_term=SOL&size=10&sort_by=total_staked_amount_usd&sort_order=desc",
@@ -169,7 +170,7 @@ func (s *Stake2EarnClientTestSuite) TestFilterVaults() {
 			defer server.Close()
 
 			httpClient := httpclient.New(server.URL, nil)
-			client := NewClient(httpClient)
+			client := stake2earn.NewClient(httpClient)
 
 			// Act
 			resp, err := client.FilterVaults(s.T().Context(), tt.params)
@@ -197,7 +198,7 @@ func (s *Stake2EarnClientTestSuite) TestGetVault() {
 		{
 			name:    "should successfully get a single vault",
 			address: "vault123",
-			response: Vault{
+			response: stake2earn.Vault{
 				VaultAddress: "vault123",
 			},
 			status:  http.StatusOK,
@@ -212,7 +213,7 @@ func (s *Stake2EarnClientTestSuite) TestGetVault() {
 			defer server.Close()
 
 			httpClient := httpclient.New(server.URL, nil)
-			client := NewClient(httpClient)
+			client := stake2earn.NewClient(httpClient)
 
 			// Act
 			resp, err := client.GetVault(s.T().Context(), tt.address)
