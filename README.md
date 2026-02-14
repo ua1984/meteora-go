@@ -1,4 +1,9 @@
-# meteora-go
+# Meteora Go SDK
+
+[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/ua1984/meteora-go/test.yml?branch=master&style=flat-square)](https://github.com/ua1984/meteora-go/workflows/test.yml)
+[![GoDoc](https://pkg.go.dev/badge/mod/github.com/ua1984/meteora-go)](https://pkg.go.dev/mod/github.com/ua1984/meteora-go)
+[![Go Report Card](https://goreportcard.com/badge/github.com/ua1984/meteora-go)](https://goreportcard.com/report/github.com/ua1984/meteora-go)
+[![Release](https://img.shields.io/github/release/ua1984/meteora-go.svg?style=flat-square)](https://github.com/ua1984/meteora-go/releases/latest)
 
 Go client library for the [Meteora](https://meteora.ag) REST APIs. Covers all five Meteora services with a unified client and zero external dependencies (only `net/http`).
 
@@ -157,3 +162,11 @@ if err != nil {
 	}
 }
 ```
+
+## Requirements
+
+- Go 1.18 or later
+
+## License
+
+See LICENSE file for details.
