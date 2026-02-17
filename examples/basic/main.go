@@ -16,14 +16,14 @@ func main() {
 	defer cancel()
 
 	// List DLMM pools
-	page, limit := 1, 5
 	pools, err := client.DLMM.ListPools(ctx, &dlmm.ListPoolsParams{
-		Page:  &page,
-		Limit: &limit,
+		Page:  meteora.Int(1),
+		Limit: meteora.Int(5),
 	})
 	if err != nil {
 		log.Fatalf("ListPools: %v", err)
 	}
+
 	fmt.Printf("DLMM Pools (total: %d, showing %d):\n", pools.Total, len(pools.Data))
 	for _, p := range pools.Data {
 		fmt.Printf("  %s (%s) - TVL: $%.2f, 24h Vol: $%.2f\n",
@@ -36,6 +36,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("DAMMv2.ListPools: %v", err)
 	}
+
 	fmt.Printf("DAMM v2 Pools (total: %d)\n", dammPools.Total)
 
 	// DAMM v1 metrics
@@ -44,6 +45,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("DAMMv1.GetPoolsMetrics: %v", err)
 	}
+
 	fmt.Printf("DAMM v1 Metrics:\n")
 	fmt.Printf("  Dynamic AMM TVL: $%.2f\n", metrics.DynamicAMMTVL)
 	fmt.Printf("  Dynamic AMM Total Volume: $%.2f\n", metrics.DynamicAMMTotalVolume)
@@ -54,6 +56,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Stake2Earn.GetAnalytics: %v", err)
 	}
+
 	fmt.Printf("Stake2Earn: %d vaults, $%.2f total staked\n",
 		analytics.TotalFeeVaults, analytics.TotalStakedAmountUSD)
 
@@ -63,6 +66,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("DynamicVault.ListVaultInfo: %v", err)
 	}
+
 	fmt.Printf("Dynamic Vaults: %d total\n", len(vaults))
 	for i, v := range vaults {
 		if i >= 5 {
