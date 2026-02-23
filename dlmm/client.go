@@ -192,6 +192,63 @@ func (c *Client) GetProtocolMetrics(ctx context.Context) (*ProtocolMetrics, erro
 	return &metrics, nil
 }
 
+// GetPositionHistoricalEvents returns the historical events for a position.
+func (c *Client) GetPositionHistoricalEvents(ctx context.Context, address string, params *GetPositionHistoricalEventsParams) (*GetPositionHistoricalEventsResponse, error) {
+	q := url.Values{}
+	if params != nil {
+		if params.EventType != nil {
+			q.Set("event_type", string(*params.EventType))
+		}
+		if params.OrderDirection != nil {
+			q.Set("order_direction", string(*params.OrderDirection))
+		}
+	}
+
+	path := fmt.Sprintf("/positions/%s/historical", address)
+	var resp GetPositionHistoricalEventsResponse
+	if err := c.http.Get(ctx, path, q, &resp); err != nil {
+		return nil, fmt.Errorf("dlmm.GetPositionHistoricalEvents: %w", err)
+	}
+
+	return &resp, nil
+}
+
+// GetPositionTotalClaimFees returns the total claim fees for a position.
+func (c *Client) GetPositionTotalClaimFees(ctx context.Context, address string) ([]PositionTotalClaimFees, error) {
+	path := fmt.Sprintf("/positions/%s/total_claim_fees", address)
+	var resp []PositionTotalClaimFees
+	if err := c.http.Get(ctx, path, nil, &resp); err != nil {
+		return nil, fmt.Errorf("dlmm.GetPositionTotalClaimFees: %w", err)
+	}
+
+	return resp, nil
+}
+
+// GetPoolPositionPnL returns positions for a specific pool and user with calculated PnL values.
+func (c *Client) GetPoolPositionPnL(ctx context.Context, poolAddress string, params *GetPoolPositionPnLParams) (*GetPoolPositionPnLResponse, error) {
+	q := url.Values{}
+	if params != nil {
+		q.Set("user", params.User)
+		if params.Status != nil {
+			q.Set("status", string(*params.Status))
+		}
+		if params.Page != nil {
+			q.Set("page", strconv.Itoa(*params.Page))
+		}
+		if params.PageSize != nil {
+			q.Set("page_size", strconv.Itoa(*params.PageSize))
+		}
+	}
+
+	path := fmt.Sprintf("/positions/%s/pnl", poolAddress)
+	var resp GetPoolPositionPnLResponse
+	if err := c.http.Get(ctx, path, q, &resp); err != nil {
+		return nil, fmt.Errorf("dlmm.GetPoolPositionPnL: %w", err)
+	}
+
+	return &resp, nil
+}
+
 // GetPortfolio returns the user's portfolio with pool metadata and aggregated PnL.
 func (c *Client) GetPortfolio(ctx context.Context, params *GetPortfolioParams) (*GetPortfolioResponse, error) {
 	q := url.Values{}

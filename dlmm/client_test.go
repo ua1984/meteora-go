@@ -387,6 +387,206 @@ func (s *DLMMClientTestSuite) TestGetProtocolMetrics() {
 	}
 }
 
+func (s *DLMMClientTestSuite) TestGetPositionHistoricalEvents() {
+	tests := []struct {
+		name       string
+		address    string
+		params     *dlmm.GetPositionHistoricalEventsParams
+		status     int
+		response   any
+		wantURL    string
+		wantErr    bool
+		wantResult *dlmm.GetPositionHistoricalEventsResponse
+	}{
+		{
+			name:    "should successfully get historical events with params",
+			address: "pos1",
+			params: &dlmm.GetPositionHistoricalEventsParams{
+				EventType:      ptr(dlmm.PositionEventTypeAdd),
+				OrderDirection: ptr(dlmm.PositionEventOrderDirectionDesc),
+			},
+			status: http.StatusOK,
+			response: dlmm.GetPositionHistoricalEventsResponse{
+				Events: []dlmm.PositionEvent{{Signature: "sig1", EventType: "add"}},
+			},
+			wantURL: "/positions/pos1/historical?event_type=add&order_direction=desc",
+			wantResult: &dlmm.GetPositionHistoricalEventsResponse{
+				Events: []dlmm.PositionEvent{{Signature: "sig1", EventType: "add"}},
+			},
+		},
+		{
+			name:    "should successfully get historical events without params",
+			address: "pos2",
+			status: http.StatusOK,
+			response: dlmm.GetPositionHistoricalEventsResponse{
+				Events: []dlmm.PositionEvent{},
+			},
+			wantURL: "/positions/pos2/historical",
+			wantResult: &dlmm.GetPositionHistoricalEventsResponse{
+				Events: []dlmm.PositionEvent{},
+			},
+		},
+		{
+			name:    "should return error on API failure",
+			address: "pos3",
+			status:  http.StatusInternalServerError,
+			response: "Error",
+			wantURL: "/positions/pos3/historical",
+			wantErr: true,
+		},
+	}
+
+	for _, tt := range tests {
+		s.Run(tt.name, func() {
+			// Arrange
+			server := s.setupTestServer(http.MethodGet, tt.wantURL, tt.status, tt.response)
+			defer server.Close()
+			client := dlmm.NewClient(httpclient.New(server.URL, nil))
+
+			// Act
+			resp, err := client.GetPositionHistoricalEvents(context.Background(), tt.address, tt.params)
+
+			// Assert
+			if tt.wantErr {
+				s.Error(err)
+			} else {
+				s.NoError(err)
+				s.Equal(tt.wantResult, resp)
+			}
+		})
+	}
+}
+
+func (s *DLMMClientTestSuite) TestGetPositionTotalClaimFees() {
+	tests := []struct {
+		name       string
+		address    string
+		status     int
+		response   any
+		wantURL    string
+		wantErr    bool
+		wantResult []dlmm.PositionTotalClaimFees
+	}{
+		{
+			name:    "should successfully get total claim fees",
+			address: "pos1",
+			status:  http.StatusOK,
+			response: []dlmm.PositionTotalClaimFees{
+				{PoolAddress: "pool1", TotalFeeX: "100", TotalFeeY: "200"},
+			},
+			wantURL: "/positions/pos1/total_claim_fees",
+			wantResult: []dlmm.PositionTotalClaimFees{
+				{PoolAddress: "pool1", TotalFeeX: "100", TotalFeeY: "200"},
+			},
+		},
+		{
+			name:     "should return error on API failure",
+			address:  "pos2",
+			status:   http.StatusNotFound,
+			response: "Not Found",
+			wantURL:  "/positions/pos2/total_claim_fees",
+			wantErr:  true,
+		},
+	}
+
+	for _, tt := range tests {
+		s.Run(tt.name, func() {
+			// Arrange
+			server := s.setupTestServer(http.MethodGet, tt.wantURL, tt.status, tt.response)
+			defer server.Close()
+			client := dlmm.NewClient(httpclient.New(server.URL, nil))
+
+			// Act
+			resp, err := client.GetPositionTotalClaimFees(context.Background(), tt.address)
+
+			// Assert
+			if tt.wantErr {
+				s.Error(err)
+			} else {
+				s.NoError(err)
+				s.Equal(tt.wantResult, resp)
+			}
+		})
+	}
+}
+
+func (s *DLMMClientTestSuite) TestGetPoolPositionPnL() {
+	tests := []struct {
+		name        string
+		poolAddress string
+		params      *dlmm.GetPoolPositionPnLParams
+		status      int
+		response    any
+		wantURL     string
+		wantErr     bool
+		wantResult  *dlmm.GetPoolPositionPnLResponse
+	}{
+		{
+			name:        "should successfully get pool position pnl with all params",
+			poolAddress: "pool1",
+			params: &dlmm.GetPoolPositionPnLParams{
+				User:     "user123",
+				Status:   ptr(dlmm.PositionStatusOpen),
+				Page:     ptr(1),
+				PageSize: ptr(20),
+			},
+			status: http.StatusOK,
+			response: dlmm.GetPoolPositionPnLResponse{
+				Page:        1,
+				PageSize:    20,
+				TotalCount:  1,
+				TokenXPrice: "1.0",
+				TokenYPrice: "2.0",
+				RewardTokenXPrice: "3.0",
+				RewardTokenYPrice: "4.0",
+				Positions: []dlmm.PositionPnLData{{PositionAddress: "posA", IsClosed: false}},
+			},
+			wantURL: "/positions/pool1/pnl?page=1&page_size=20&status=open&user=user123",
+			wantResult: &dlmm.GetPoolPositionPnLResponse{
+				Page:        1,
+				PageSize:    20,
+				TotalCount:  1,
+				TokenXPrice: "1.0",
+				TokenYPrice: "2.0",
+				RewardTokenXPrice: "3.0",
+				RewardTokenYPrice: "4.0",
+				Positions: []dlmm.PositionPnLData{{PositionAddress: "posA", IsClosed: false}},
+			},
+		},
+		{
+			name:        "should return error on API failure",
+			poolAddress: "pool2",
+			params: &dlmm.GetPoolPositionPnLParams{
+				User: "user456",
+			},
+			status:   http.StatusBadRequest,
+			response: "Bad Request",
+			wantURL:  "/positions/pool2/pnl?user=user456",
+			wantErr:  true,
+		},
+	}
+
+	for _, tt := range tests {
+		s.Run(tt.name, func() {
+			// Arrange
+			server := s.setupTestServer(http.MethodGet, tt.wantURL, tt.status, tt.response)
+			defer server.Close()
+			client := dlmm.NewClient(httpclient.New(server.URL, nil))
+
+			// Act
+			resp, err := client.GetPoolPositionPnL(context.Background(), tt.poolAddress, tt.params)
+
+			// Assert
+			if tt.wantErr {
+				s.Error(err)
+			} else {
+				s.NoError(err)
+				s.Equal(tt.wantResult, resp)
+			}
+		})
+	}
+}
+
 // TestGetPortfolio tests the GetPortfolio method.
 func (s *DLMMClientTestSuite) TestGetPortfolio() {
 	tests := []struct {

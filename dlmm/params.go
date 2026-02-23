@@ -219,6 +219,32 @@ const (
 	SortDirectionDesc SortDirection = "desc"
 )
 
+// GetPositionHistoricalEventsParams are optional query parameters for the GetPositionHistoricalEvents method.
+type GetPositionHistoricalEventsParams struct {
+	// EventType filters by event type (add, remove, claim_fee, claim_reward).
+	// If not provided, returns all event types.
+	EventType *PositionEventType `json:"event_type,omitempty"`
+
+	// OrderDirection is the sort order for events by block time.
+	// asc: Oldest events first, desc: Most recent events first (default).
+	OrderDirection *PositionEventOrderDirection `json:"order_direction,omitempty"`
+}
+
+// GetPoolPositionPnLParams are query parameters for the GetPoolPositionPnL method.
+type GetPoolPositionPnLParams struct {
+	// User is the wallet address of the user.
+	User string `json:"user"`
+
+	// Status filters positions by status: open, closed, or all (default: all).
+	Status *PositionStatus `json:"status,omitempty"`
+
+	// Page is the page number for pagination (minimum: 1, default: 1).
+	Page *int `json:"page,omitempty"`
+
+	// PageSize is the page size for pagination (minimum: 1, maximum: 100, default: 20).
+	PageSize *int `json:"page_size,omitempty"`
+}
+
 // GetOpenPortfolioParams are optional query parameters for the GetOpenPortfolio method.
 type GetOpenPortfolioParams struct {
 	// User's wallet address.
