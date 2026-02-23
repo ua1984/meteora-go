@@ -38,3 +38,27 @@ type AlphaVaultParams struct {
 	// BaseMint filters results to vaults with the specified base mint addresses.
 	BaseMint []string
 }
+
+// ListPoolsParams are optional filter parameters for the ListPools method.
+type ListPoolsParams struct {
+	// Address filters results to the specified pool addresses.
+	Address []string
+
+	// Unknown includes pools with unrecognized tokens when true.
+	Unknown *bool
+
+	// PoolType filters by pool variant ("dynamic", "multitoken", "lst", "farms").
+	PoolType *string
+
+	// IsMonitoring filters to pools under monitoring.
+	IsMonitoring *bool
+
+	// HideLowTVL excludes pools whose TVL is below this USD threshold.
+	HideLowTVL *float64
+
+	// HideLowAPR excludes pools with low APR when true.
+	HideLowAPR *bool
+
+	// Launchpad filters results to pools associated with the specified launchpad addresses.
+	Launchpad []string
+}

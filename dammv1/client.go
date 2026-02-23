@@ -19,11 +19,35 @@ func NewClient(http *httpclient.Client) *Client {
 	return &Client{http: http}
 }
 
-// ListPools returns pools, optionally filtered by address.
-func (c *Client) ListPools(ctx context.Context, address string) ([]Pool, error) {
-	q := url.Values{}
-	if address != "" {
-		q.Set("address", address)
+// ListPools returns pools, optionally filtered by the provided parameters.
+func (c *Client) ListPools(ctx context.Context, params *ListPoolsParams) ([]Pool, error) {
+	var q url.Values
+	if params != nil {
+		q = url.Values{}
+		for _, v := range params.Address {
+			q.Add("address", v)
+		}
+		if params.Unknown != nil {
+			q.Set("unknown", strconv.FormatBool(*params.Unknown))
+		}
+		if params.PoolType != nil {
+			q.Set("pool_type", *params.PoolType)
+		}
+		if params.IsMonitoring != nil {
+			q.Set("is_monitoring", strconv.FormatBool(*params.IsMonitoring))
+		}
+		if params.HideLowTVL != nil {
+			q.Set("hide_low_tvl", strconv.FormatFloat(*params.HideLowTVL, 'f', -1, 64))
+		}
+		if params.HideLowAPR != nil {
+			q.Set("hide_low_apr", strconv.FormatBool(*params.HideLowAPR))
+		}
+		for _, v := range params.Launchpad {
+			q.Add("launchpad", v)
+		}
+		if len(q) == 0 {
+			q = nil
+		}
 	}
 
 	var pools []Pool

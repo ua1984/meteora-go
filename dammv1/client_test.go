@@ -36,7 +36,7 @@ func (s *ClientTestSuite) TestListPools() {
 		{PoolAddress: "pool2", PoolName: "USDT-USDC"},
 	}
 
-	s.Run("should list pools without address", func() {
+	s.Run("should list pools without params", func() {
 		// Arrange
 		server := s.setupTestServer(http.MethodGet, "/pools", http.StatusOK, wantPools)
 		defer server.Close()
@@ -44,27 +44,42 @@ func (s *ClientTestSuite) TestListPools() {
 		client := dammv1.NewClient(httpclient.New(server.URL, nil))
 
 		// Act
-		pools, err := client.ListPools(context.TODO(), "")
+		pools, err := client.ListPools(context.TODO(), nil)
 
 		// Assert
 		s.NoError(err)
 		s.Equal(wantPools, pools)
 	})
 
-	s.Run("should list pools with address", func() {
+	s.Run("should list pools with all filters", func() {
 		// Arrange
-		address := "pool1"
-		server := s.setupTestServer(http.MethodGet, "/pools?address="+address, http.StatusOK, wantPools[:1])
+		unknown := true
+		poolType := "dynamic"
+		isMonitoring := false
+		hideLowTVL := 1000.5
+		hideLowAPR := true
+		params := &dammv1.ListPoolsParams{
+			Address:      []string{"pool1", "pool2"},
+			Unknown:      &unknown,
+			PoolType:     &poolType,
+			IsMonitoring: &isMonitoring,
+			HideLowTVL:   &hideLowTVL,
+			HideLowAPR:   &hideLowAPR,
+			Launchpad:    []string{"launch1"},
+		}
+
+		wantURL := "/pools?address=pool1&address=pool2&hide_low_apr=true&hide_low_tvl=1000.5&is_monitoring=false&launchpad=launch1&pool_type=dynamic&unknown=true"
+		server := s.setupTestServer(http.MethodGet, wantURL, http.StatusOK, wantPools)
 		defer server.Close()
 
 		client := dammv1.NewClient(httpclient.New(server.URL, nil))
 
 		// Act
-		pools, err := client.ListPools(context.TODO(), address)
+		pools, err := client.ListPools(context.TODO(), params)
 
 		// Assert
 		s.NoError(err)
-		s.Equal(wantPools[:1], pools)
+		s.Equal(wantPools, pools)
 	})
 }
 
