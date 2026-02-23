@@ -185,3 +185,54 @@ type TimeframeBasedParams struct {
 	// If omitted, the API uses "now" as the end.
 	EndTime *int64 `json:"end_time,omitempty"`
 }
+
+// GetPortfolioParams are optional query parameters for the GetPortfolio method.
+type GetPortfolioParams struct {
+	// User's wallet address.
+	User string `json:"user"`
+
+	// Page number for pagination (minimum: 1, default: 1).
+	Page *int `json:"page,omitempty"`
+
+	// Page size for pagination (default: 20, maximum: 50).
+	PageSize *int `json:"page_size,omitempty"`
+
+	// Only include pools with positions closed within this many days.
+	// Applied only for closed positions (minimum: 1, maximum: 365, default: 120).
+	DaysBack *int `json:"days_back,omitempty"`
+}
+
+// GetOpenPortfolioSort defines the fields to sort open portfolio results by.
+type GetOpenPortfolioSort string
+
+const (
+	SortByCurrentBalances GetOpenPortfolioSort = "current_balances"
+	SortByUnclaimedFee    GetOpenPortfolioSort = "unclaimed_fee"
+	SortByFeePerTVL24h    GetOpenPortfolioSort = "fee_per_tvl24h"
+)
+
+// SortDirection defines the sort direction.
+type SortDirection string
+
+const (
+	SortDirectionAsc  SortDirection = "asc"
+	SortDirectionDesc SortDirection = "desc"
+)
+
+// GetOpenPortfolioParams are optional query parameters for the GetOpenPortfolio method.
+type GetOpenPortfolioParams struct {
+	// User's wallet address.
+	User string `json:"user"`
+
+	// Page number for pagination (minimum: 1, default: 1).
+	Page *int `json:"page,omitempty"`
+
+	// Page size for pagination (default: 20, maximum: 50).
+	PageSize *int `json:"page_size,omitempty"`
+
+	// SortDirection is the sort direction, default is DESC.
+	SortDirection *SortDirection `json:"sort_direction,omitempty"`
+
+	// SortBy is the field to sort by, default is current_balances.
+	SortBy *GetOpenPortfolioSort `json:"sort_by,omitempty"`
+}

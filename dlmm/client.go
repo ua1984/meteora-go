@@ -19,7 +19,7 @@ func NewClient(http *httpclient.Client) *Client {
 	return &Client{http: http}
 }
 
-// ListPools returns a paginated list of DLMM pools.
+// ListPools returns a paginated list of pools.
 func (c *Client) ListPools(ctx context.Context, params *ListPoolsParams) (*PaginatedResponse[Pool], error) {
 	q := url.Values{}
 	if params != nil {
@@ -83,7 +83,7 @@ func (c *Client) ListGroups(ctx context.Context, params *ListGroupsParams) (*Pag
 	return &resp, nil
 }
 
-// GetGroup returns pools within a specific token pair group.
+// GetGroup returns a paginated list of pools that belong to a specific pool group.
 func (c *Client) GetGroup(ctx context.Context, lexicalOrderMints string, params *GetGroupParams) (*PaginatedResponse[Pool], error) {
 	q := url.Values{}
 	if params != nil {
@@ -113,7 +113,7 @@ func (c *Client) GetGroup(ctx context.Context, lexicalOrderMints string, params 
 	return &resp, nil
 }
 
-// GetPool returns a single pool by address.
+// GetPool returns metadata and current state for a single pool.
 func (c *Client) GetPool(ctx context.Context, address string) (*Pool, error) {
 	path := fmt.Sprintf("/pools/%s", address)
 	var pool Pool
@@ -124,7 +124,12 @@ func (c *Client) GetPool(ctx context.Context, address string) (*Pool, error) {
 	return &pool, nil
 }
 
-// GetOHLCV returns OHLCV candlestick data for a pool.
+// GetOHLCV returns OHLCV candles for a single pool over a time range.
+//
+// Notes:
+//   - If both start_time and end_time are provided, candles are returned in the range [start_time, end_time].
+//   - If only one of start_time or end_time is provided, the missing bound is inferred using the selected timeframe.
+//   - If neither is provided, a default range is used based on timeframe.
 func (c *Client) GetOHLCV(ctx context.Context, address string, params *OHLCVParams) (*OHLCVResponse, error) {
 	q := url.Values{}
 	if params != nil {
@@ -148,7 +153,12 @@ func (c *Client) GetOHLCV(ctx context.Context, address string, params *OHLCVPara
 	return &resp, nil
 }
 
-// GetVolumeHistory returns volume history for a pool.
+// GetVolumeHistory returns historical volume for a pool aggregated into time buckets.
+//
+// Notes:
+//   - If both start_time and end_time are provided, the result covers the range [start_time, end_time].
+//   - If only one of start_time or end_time is provided, the missing bound is inferred using the selected timeframe.
+//   - If neither is provided, a default range is used based on timeframe.
 func (c *Client) GetVolumeHistory(ctx context.Context, address string, params *VolumeHistoryParams) (*VolumeHistoryResponse, error) {
 	q := url.Values{}
 	if params != nil {
@@ -172,7 +182,7 @@ func (c *Client) GetVolumeHistory(ctx context.Context, address string, params *V
 	return &resp, nil
 }
 
-// GetProtocolMetrics returns protocol-wide metrics.
+// GetProtocolMetrics returns aggregated protocol-level metrics across all pools.
 func (c *Client) GetProtocolMetrics(ctx context.Context) (*ProtocolMetrics, error) {
 	var metrics ProtocolMetrics
 	if err := c.http.Get(ctx, "/stats/protocol_metrics", nil, &metrics); err != nil {
@@ -180,4 +190,68 @@ func (c *Client) GetProtocolMetrics(ctx context.Context) (*ProtocolMetrics, erro
 	}
 
 	return &metrics, nil
+}
+
+// GetPortfolio returns the user's portfolio with pool metadata and aggregated PnL.
+func (c *Client) GetPortfolio(ctx context.Context, params *GetPortfolioParams) (*GetPortfolioResponse, error) {
+	q := url.Values{}
+	if params != nil {
+		q.Set("user", params.User)
+		if params.Page != nil {
+			q.Set("page", strconv.Itoa(*params.Page))
+		}
+		if params.PageSize != nil {
+			q.Set("page_size", strconv.Itoa(*params.PageSize))
+		}
+		if params.DaysBack != nil {
+			q.Set("days_back", strconv.Itoa(*params.DaysBack))
+		}
+	}
+
+	var resp GetPortfolioResponse
+	if err := c.http.Get(ctx, "/portfolio", q, &resp); err != nil {
+		return nil, fmt.Errorf("dlmm.GetPortfolio: %w", err)
+	}
+
+	return &resp, nil
+}
+
+// GetOpenPortfolio returns the user's open portfolio with pool metadata, balances, and total metrics.
+func (c *Client) GetOpenPortfolio(ctx context.Context, params *GetOpenPortfolioParams) (*GetOpenPortfolioResponse, error) {
+	q := url.Values{}
+	if params != nil {
+		q.Set("user", params.User)
+		if params.Page != nil {
+			q.Set("page", strconv.Itoa(*params.Page))
+		}
+		if params.PageSize != nil {
+			q.Set("page_size", strconv.Itoa(*params.PageSize))
+		}
+		if params.SortDirection != nil {
+			q.Set("sort_direction", string(*params.SortDirection))
+		}
+		if params.SortBy != nil {
+			q.Set("sort_by", string(*params.SortBy))
+		}
+	}
+
+	var resp GetOpenPortfolioResponse
+	if err := c.http.Get(ctx, "/portfolio/open", q, &resp); err != nil {
+		return nil, fmt.Errorf("dlmm.GetOpenPortfolio: %w", err)
+	}
+
+	return &resp, nil
+}
+
+// GetPortfolioTotal returns the all-time total PnL across all user's pools.
+func (c *Client) GetPortfolioTotal(ctx context.Context, user string) (*PortfolioTotalResponse, error) {
+	q := url.Values{}
+	q.Set("user", user)
+
+	var resp PortfolioTotalResponse
+	if err := c.http.Get(ctx, "/portfolio/total", q, &resp); err != nil {
+		return nil, fmt.Errorf("dlmm.GetPortfolioTotal: %w", err)
+	}
+
+	return &resp, nil
 }

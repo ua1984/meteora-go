@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] - TBD
 
+### Added
+
+- Added DLMM portfolio endpoints: `/portfolio`, `/portfolio/open`, and `/portfolio/total`
+
 ### Changed
 
 - Remove DLMM legacy API support
