@@ -1,21 +1,49 @@
 package dammv1
 
-// SearchParams are optional query parameters for the SearchPools method.
+// SearchParams are query parameters for the SearchPools method.
+// Page and Size are required; all other fields are optional.
 type SearchParams struct {
-	// Page is the 1-based page number to retrieve.
-	Page *int `json:"page,omitempty"`
+	// Page is the 0-based page number to retrieve.
+	Page int
 
 	// Size is the number of pools per page.
-	Size *int `json:"size,omitempty"`
+	Size int
 
-	// SearchTerm filters pools by name, symbol, or address substring.
-	SearchTerm *string `json:"search_term,omitempty"`
+	// Filter is a free-text search string.
+	Filter *string
 
-	// SortBy is the field name to sort results by.
-	SortBy *string `json:"sort_by,omitempty"`
+	// SortKey is the field to sort by ("tvl", "volume", "fee_tvl_ratio", "l_m").
+	SortKey *string
 
-	// SortOrder is the sort direction ("asc" or "desc").
-	SortOrder *string `json:"sort_order,omitempty"`
+	// OrderBy is the sort direction ("asc" or "desc").
+	OrderBy *string
+
+	// PoolsToTop is a list of pool addresses to prioritize at the top of results.
+	PoolsToTop []string
+
+	// Unknown includes pools with unrecognized tokens when true.
+	Unknown *bool
+
+	// PoolType filters by pool variant ("dynamic", "multitoken", "lst", "farms").
+	PoolType *string
+
+	// IsMonitoring filters to pools under monitoring.
+	IsMonitoring *bool
+
+	// HideLowTVL excludes pools whose TVL is below this USD threshold.
+	HideLowTVL *float64
+
+	// HideLowAPR excludes pools with low APR when true.
+	HideLowAPR *bool
+
+	// IncludeTokenMints is an allowlist of token mint addresses to include.
+	IncludeTokenMints []string
+
+	// IncludePoolTokenPairs is an allowlist of pool token pair combinations to include.
+	IncludePoolTokenPairs []string
+
+	// Launchpad filters results to pools associated with the specified launchpad addresses.
+	Launchpad []string
 }
 
 // PaginationParams are query parameters for paginated endpoints (e.g., ListPoolsWithFarm).

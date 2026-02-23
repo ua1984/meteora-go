@@ -58,24 +58,47 @@ func (c *Client) ListPools(ctx context.Context, params *ListPoolsParams) ([]Pool
 	return pools, nil
 }
 
-// SearchPools searches for pools with pagination.
+// SearchPools searches for pools with filtering and pagination.
 func (c *Client) SearchPools(ctx context.Context, params *SearchParams) (*SearchResult, error) {
 	q := url.Values{}
 	if params != nil {
-		if params.Page != nil {
-			q.Set("page", strconv.Itoa(*params.Page))
+		q.Set("page", strconv.Itoa(params.Page))
+		q.Set("size", strconv.Itoa(params.Size))
+		if params.Filter != nil {
+			q.Set("filter", *params.Filter)
 		}
-		if params.Size != nil {
-			q.Set("size", strconv.Itoa(*params.Size))
+		if params.SortKey != nil {
+			q.Set("sort_key", *params.SortKey)
 		}
-		if params.SearchTerm != nil {
-			q.Set("search_term", *params.SearchTerm)
+		if params.OrderBy != nil {
+			q.Set("order_by", *params.OrderBy)
 		}
-		if params.SortBy != nil {
-			q.Set("sort_by", *params.SortBy)
+		for _, v := range params.PoolsToTop {
+			q.Add("pools_to_top", v)
 		}
-		if params.SortOrder != nil {
-			q.Set("sort_order", *params.SortOrder)
+		if params.Unknown != nil {
+			q.Set("unknown", strconv.FormatBool(*params.Unknown))
+		}
+		if params.PoolType != nil {
+			q.Set("pool_type", *params.PoolType)
+		}
+		if params.IsMonitoring != nil {
+			q.Set("is_monitoring", strconv.FormatBool(*params.IsMonitoring))
+		}
+		if params.HideLowTVL != nil {
+			q.Set("hide_low_tvl", strconv.FormatFloat(*params.HideLowTVL, 'f', -1, 64))
+		}
+		if params.HideLowAPR != nil {
+			q.Set("hide_low_apr", strconv.FormatBool(*params.HideLowAPR))
+		}
+		for _, v := range params.IncludeTokenMints {
+			q.Add("include_token_mints", v)
+		}
+		for _, v := range params.IncludePoolTokenPairs {
+			q.Add("include_pool_token_pairs", v)
+		}
+		for _, v := range params.Launchpad {
+			q.Add("launchpad", v)
 		}
 	}
 

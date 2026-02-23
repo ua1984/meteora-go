@@ -90,22 +90,11 @@ func (s *ClientTestSuite) TestSearchPools() {
 		TotalCount: 1,
 	}
 
-	s.Run("should search pools with params", func() {
+	s.Run("should search pools with required params only", func() {
 		// Arrange
-		page := 1
-		size := 10
-		searchTerm := "SOL"
-		sortBy := "tvl"
-		sortOrder := "desc"
-		params := &dammv1.SearchParams{
-			Page:       &page,
-			Size:       &size,
-			SearchTerm: &searchTerm,
-			SortBy:     &sortBy,
-			SortOrder:  &sortOrder,
-		}
+		params := &dammv1.SearchParams{Page: 1, Size: 10}
 
-		wantURL := "/pools/search?page=1&search_term=SOL&size=10&sort_by=tvl&sort_order=desc"
+		wantURL := "/pools/search?page=1&size=10"
 		server := s.setupTestServer(http.MethodGet, wantURL, http.StatusOK, wantResult)
 		defer server.Close()
 
@@ -119,15 +108,41 @@ func (s *ClientTestSuite) TestSearchPools() {
 		s.Equal(wantResult, result)
 	})
 
-	s.Run("should search pools without params", func() {
+	s.Run("should search pools with all params", func() {
 		// Arrange
-		server := s.setupTestServer(http.MethodGet, "/pools/search", http.StatusOK, wantResult)
+		filter := "SOL"
+		sortKey := "tvl"
+		orderBy := "desc"
+		unknown := true
+		poolType := "dynamic"
+		isMonitoring := false
+		hideLowTVL := 500.0
+		hideLowAPR := true
+		params := &dammv1.SearchParams{
+			Page:                  2,
+			Size:                  20,
+			Filter:                &filter,
+			SortKey:               &sortKey,
+			OrderBy:               &orderBy,
+			PoolsToTop:            []string{"pool1"},
+			Unknown:               &unknown,
+			PoolType:              &poolType,
+			IsMonitoring:          &isMonitoring,
+			HideLowTVL:            &hideLowTVL,
+			HideLowAPR:            &hideLowAPR,
+			IncludeTokenMints:     []string{"mint1"},
+			IncludePoolTokenPairs: []string{"pair1"},
+			Launchpad:             []string{"launch1"},
+		}
+
+		wantURL := "/pools/search?filter=SOL&hide_low_apr=true&hide_low_tvl=500&include_pool_token_pairs=pair1&include_token_mints=mint1&is_monitoring=false&launchpad=launch1&order_by=desc&page=2&pool_type=dynamic&pools_to_top=pool1&size=20&sort_key=tvl&unknown=true"
+		server := s.setupTestServer(http.MethodGet, wantURL, http.StatusOK, wantResult)
 		defer server.Close()
 
 		client := dammv1.NewClient(httpclient.New(server.URL, nil))
 
 		// Act
-		result, err := client.SearchPools(context.TODO(), nil)
+		result, err := client.SearchPools(context.TODO(), params)
 
 		// Assert
 		s.NoError(err)
