@@ -219,6 +219,33 @@ const (
 	SortDirectionDesc SortDirection = "desc"
 )
 
+// GetClosedPositionsParams are optional query parameters for the GetClosedPositions method.
+type GetClosedPositionsParams struct {
+	// StartTime is the Unix timestamp in seconds (inclusive).
+	// If omitted, the API uses a default range based on end time.
+	StartTime *int64 `json:"start_time,omitempty"`
+
+	// EndTime is the Unix timestamp in seconds (inclusive).
+	// If omitted, the API uses "now" as the end.
+	EndTime *int64 `json:"end_time,omitempty"`
+
+	// Limit is the number of positions to return. Default 10, max 100.
+	Limit *int `json:"limit,omitempty"`
+
+	// NextCursor is the cursor for pagination.
+	NextCursor *string `json:"next_cursor,omitempty"`
+
+	// Pool filters positions to those belonging to a specific pool address.
+	Pool *string `json:"pool,omitempty"`
+}
+
+// GetOpenPositionsParams are optional query parameters for the GetOpenPositions method.
+type GetOpenPositionsParams struct {
+	// Pool is an optional comma-separated list of pool addresses to filter positions.
+	// Maximum of 50 pool addresses allowed.
+	Pool *string `json:"pool,omitempty"`
+}
+
 // GetPositionHistoricalEventsParams are optional query parameters for the GetPositionHistoricalEvents method.
 type GetPositionHistoricalEventsParams struct {
 	// EventType filters by event type (add, remove, claim_fee, claim_reward).

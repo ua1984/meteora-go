@@ -387,6 +387,165 @@ func (s *DLMMClientTestSuite) TestGetProtocolMetrics() {
 	}
 }
 
+func (s *DLMMClientTestSuite) TestGetClosedPositions() {
+	tests := []struct {
+		name       string
+		wallet     string
+		params     *dlmm.GetClosedPositionsParams
+		status     int
+		response   any
+		wantURL    string
+		wantErr    bool
+		wantResult *dlmm.ClosedPositionsCursorResponse
+	}{
+		{
+			name:   "should successfully get closed positions with params",
+			wallet: "wallet1",
+			params: &dlmm.GetClosedPositionsParams{
+				Limit: ptr(10),
+				Pool:  ptr("pool1"),
+			},
+			status: http.StatusOK,
+			response: dlmm.ClosedPositionsCursorResponse{
+				Limit: 10,
+				Data:  []dlmm.ClosedPosition{{PositionAddress: "pos1", PoolAddress: "pool1"}},
+			},
+			wantURL: "/wallets/wallet1/closed_positions?limit=10&pool=pool1",
+			wantResult: &dlmm.ClosedPositionsCursorResponse{
+				Limit: 10,
+				Data:  []dlmm.ClosedPosition{{PositionAddress: "pos1", PoolAddress: "pool1"}},
+			},
+		},
+		{
+			name:   "should successfully get closed positions without params",
+			wallet: "wallet2",
+			status: http.StatusOK,
+			response: dlmm.ClosedPositionsCursorResponse{
+				Limit: 10,
+				Data:  []dlmm.ClosedPosition{},
+			},
+			wantURL: "/wallets/wallet2/closed_positions",
+			wantResult: &dlmm.ClosedPositionsCursorResponse{
+				Limit: 10,
+				Data:  []dlmm.ClosedPosition{},
+			},
+		},
+		{
+			name:     "should return error on API failure",
+			wallet:   "wallet3",
+			status:   http.StatusBadRequest,
+			response: "Bad Request",
+			wantURL:  "/wallets/wallet3/closed_positions",
+			wantErr:  true,
+		},
+	}
+
+	for _, tt := range tests {
+		s.Run(tt.name, func() {
+			// Arrange
+			server := s.setupTestServer(http.MethodGet, tt.wantURL, tt.status, tt.response)
+			defer server.Close()
+			client := dlmm.NewClient(httpclient.New(server.URL, nil))
+
+			// Act
+			resp, err := client.GetClosedPositions(context.Background(), tt.wallet, tt.params)
+
+			// Assert
+			if tt.wantErr {
+				s.Error(err)
+			} else {
+				s.NoError(err)
+				s.Equal(tt.wantResult, resp)
+			}
+		})
+	}
+}
+
+func (s *DLMMClientTestSuite) TestGetOpenPositions() {
+	tests := []struct {
+		name       string
+		wallet     string
+		params     *dlmm.GetOpenPositionsParams
+		status     int
+		response   any
+		wantURL    string
+		wantErr    bool
+		wantResult *dlmm.OpenPositionsResponse
+	}{
+		{
+			name:   "should successfully get open positions with pool filter",
+			wallet: "wallet1",
+			params: &dlmm.GetOpenPositionsParams{
+				Pool: ptr("pool1,pool2"),
+			},
+			status: http.StatusOK,
+			response: dlmm.OpenPositionsResponse{
+				TotalPools:     1,
+				TotalPositions: 2,
+				Data: []dlmm.PositionsByPool{{
+					PoolAddress: "pool1",
+					Name:        "SOL-USDC",
+					Positions:   []dlmm.OpenPosition{{PositionAddress: "posA"}},
+				}},
+			},
+			wantURL: "/wallets/wallet1/open_positions?pool=pool1%2Cpool2",
+			wantResult: &dlmm.OpenPositionsResponse{
+				TotalPools:     1,
+				TotalPositions: 2,
+				Data: []dlmm.PositionsByPool{{
+					PoolAddress: "pool1",
+					Name:        "SOL-USDC",
+					Positions:   []dlmm.OpenPosition{{PositionAddress: "posA"}},
+				}},
+			},
+		},
+		{
+			name:   "should successfully get open positions without params",
+			wallet: "wallet2",
+			status: http.StatusOK,
+			response: dlmm.OpenPositionsResponse{
+				TotalPools:     0,
+				TotalPositions: 0,
+				Data:           []dlmm.PositionsByPool{},
+			},
+			wantURL: "/wallets/wallet2/open_positions",
+			wantResult: &dlmm.OpenPositionsResponse{
+				TotalPools:     0,
+				TotalPositions: 0,
+				Data:           []dlmm.PositionsByPool{},
+			},
+		},
+		{
+			name:     "should return error on API failure",
+			wallet:   "wallet3",
+			status:   http.StatusBadRequest,
+			response: "Bad Request",
+			wantURL:  "/wallets/wallet3/open_positions",
+			wantErr:  true,
+		},
+	}
+
+	for _, tt := range tests {
+		s.Run(tt.name, func() {
+			// Arrange
+			server := s.setupTestServer(http.MethodGet, tt.wantURL, tt.status, tt.response)
+			defer server.Close()
+			client := dlmm.NewClient(httpclient.New(server.URL, nil))
+
+			// Act
+			resp, err := client.GetOpenPositions(context.Background(), tt.wallet, tt.params)
+
+			// Assert
+			if tt.wantErr {
+				s.Error(err)
+			} else {
+				s.NoError(err)
+				s.Equal(tt.wantResult, resp)
+			}
+		})
+	}
+}
+
 func (s *DLMMClientTestSuite) TestGetPositionHistoricalEvents() {
 	tests := []struct {
 		name       string
