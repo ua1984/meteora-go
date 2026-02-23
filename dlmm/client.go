@@ -9,15 +9,14 @@ import (
 	"github.com/ua1984/meteora-go/internal/httpclient"
 )
 
-// Client provides access to the DLMM API (both datapi and legacy).
+// Client provides access to the DLMM API.
 type Client struct {
-	http   *httpclient.Client
-	legacy *httpclient.Client
+	http *httpclient.Client
 }
 
 // NewClient creates a new DLMM client.
-func NewClient(http, legacy *httpclient.Client) *Client {
-	return &Client{http: http, legacy: legacy}
+func NewClient(http *httpclient.Client) *Client {
+	return &Client{http: http}
 }
 
 // ListPools returns a paginated list of DLMM pools.
@@ -181,14 +180,4 @@ func (c *Client) GetProtocolMetrics(ctx context.Context) (*ProtocolMetrics, erro
 	}
 
 	return &metrics, nil
-}
-
-// ListAllPairs returns all pairs from the legacy DLMM API.
-func (c *Client) ListAllPairs(ctx context.Context) ([]LegacyPair, error) {
-	var pairs []LegacyPair
-	if err := c.legacy.Get(ctx, "/pair/all", nil, &pairs); err != nil {
-		return nil, fmt.Errorf("dlmm.ListAllPairs: %w", err)
-	}
-
-	return pairs, nil
 }

@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] - TBD
 
+### Changed
+
+- Remove DLMM legacy API support
+
 ### Fixed
 
 - Incorrect parameters for all available DLMM endpoints

@@ -86,7 +86,7 @@ func (s *DLMMClientTestSuite) TestListPools() {
 			// Arrange
 			server := s.setupTestServer(http.MethodGet, tt.wantURL, tt.status, tt.response)
 			defer server.Close()
-			client := dlmm.NewClient(httpclient.New(server.URL, nil), nil)
+			client := dlmm.NewClient(httpclient.New(server.URL, nil))
 
 			// Act
 			resp, err := client.ListPools(context.Background(), tt.params)
@@ -140,7 +140,7 @@ func (s *DLMMClientTestSuite) TestListGroups() {
 			// Arrange
 			server := s.setupTestServer(http.MethodGet, tt.wantURL, tt.status, tt.response)
 			defer server.Close()
-			client := dlmm.NewClient(httpclient.New(server.URL, nil), nil)
+			client := dlmm.NewClient(httpclient.New(server.URL, nil))
 
 			// Act
 			resp, err := client.ListGroups(context.Background(), tt.params)
@@ -189,7 +189,7 @@ func (s *DLMMClientTestSuite) TestGetGroup() {
 			// Arrange
 			server := s.setupTestServer(http.MethodGet, tt.wantURL, tt.status, tt.response)
 			defer server.Close()
-			client := dlmm.NewClient(httpclient.New(server.URL, nil), nil)
+			client := dlmm.NewClient(httpclient.New(server.URL, nil))
 
 			// Act
 			resp, err := client.GetGroup(context.Background(), tt.lexicalOrderMints, tt.params)
@@ -230,7 +230,7 @@ func (s *DLMMClientTestSuite) TestGetPool() {
 			// Arrange
 			server := s.setupTestServer(http.MethodGet, tt.wantURL, tt.status, tt.response)
 			defer server.Close()
-			client := dlmm.NewClient(httpclient.New(server.URL, nil), nil)
+			client := dlmm.NewClient(httpclient.New(server.URL, nil))
 
 			// Act
 			resp, err := client.GetPool(context.Background(), tt.address)
@@ -281,7 +281,7 @@ func (s *DLMMClientTestSuite) TestGetOHLCV() {
 			// Arrange
 			server := s.setupTestServer(http.MethodGet, tt.wantURL, tt.status, tt.response)
 			defer server.Close()
-			client := dlmm.NewClient(httpclient.New(server.URL, nil), nil)
+			client := dlmm.NewClient(httpclient.New(server.URL, nil))
 
 			// Act
 			resp, err := client.GetOHLCV(context.Background(), tt.address, tt.params)
@@ -320,7 +320,7 @@ func (s *DLMMClientTestSuite) TestGetVolumeHistory() {
 			response: dlmm.VolumeHistoryResponse{
 				Data: []dlmm.VolumeHistory{{Timestamp: 2000}},
 			},
-			wantURL: "/pools/poolX/volume/history?page_size=20",
+			wantURL: "/pools/poolX/volume/history?timeframe=24h",
 			wantResult: &dlmm.VolumeHistoryResponse{
 				Data: []dlmm.VolumeHistory{{Timestamp: 2000}},
 			},
@@ -332,7 +332,7 @@ func (s *DLMMClientTestSuite) TestGetVolumeHistory() {
 			// Arrange
 			server := s.setupTestServer(http.MethodGet, tt.wantURL, tt.status, tt.response)
 			defer server.Close()
-			client := dlmm.NewClient(httpclient.New(server.URL, nil), nil)
+			client := dlmm.NewClient(httpclient.New(server.URL, nil))
 
 			// Act
 			resp, err := client.GetVolumeHistory(context.Background(), tt.address, tt.params)
@@ -371,49 +371,10 @@ func (s *DLMMClientTestSuite) TestGetProtocolMetrics() {
 			// Arrange
 			server := s.setupTestServer(http.MethodGet, tt.wantURL, tt.status, tt.response)
 			defer server.Close()
-			client := dlmm.NewClient(httpclient.New(server.URL, nil), nil)
+			client := dlmm.NewClient(httpclient.New(server.URL, nil))
 
 			// Act
 			resp, err := client.GetProtocolMetrics(context.Background())
-
-			// Assert
-			if tt.wantErr {
-				s.Error(err)
-			} else {
-				s.NoError(err)
-				s.Equal(tt.wantResult, resp)
-			}
-		})
-	}
-}
-
-func (s *DLMMClientTestSuite) TestListAllPairs() {
-	tests := []struct {
-		name       string
-		status     int
-		response   any
-		wantURL    string
-		wantErr    bool
-		wantResult []dlmm.LegacyPair
-	}{
-		{
-			name:       "should successfully list all pairs from legacy api",
-			status:     http.StatusOK,
-			response:   []dlmm.LegacyPair{{Address: "legacy1"}},
-			wantURL:    "/pair/all",
-			wantResult: []dlmm.LegacyPair{{Address: "legacy1"}},
-		},
-	}
-
-	for _, tt := range tests {
-		s.Run(tt.name, func() {
-			// Arrange
-			server := s.setupTestServer(http.MethodGet, tt.wantURL, tt.status, tt.response)
-			defer server.Close()
-			client := dlmm.NewClient(nil, httpclient.New(server.URL, nil))
-
-			// Act
-			resp, err := client.ListAllPairs(context.Background())
 
 			// Assert
 			if tt.wantErr {

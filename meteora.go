@@ -14,7 +14,6 @@ import (
 
 const (
 	defaultDLMMBaseURL         = "https://dlmm.datapi.meteora.ag"
-	defaultDLMMLegacyBaseURL   = "https://dlmm-api.meteora.ag"
 	defaultDAMMv2BaseURL       = "https://damm-v2.datapi.meteora.ag"
 	defaultDAMMv1BaseURL       = "https://amm-v2.meteora.ag"
 	defaultStake2EarnBaseURL   = "https://stake-for-fee-api.meteora.ag"
@@ -36,7 +35,6 @@ type Option func(*options)
 type options struct {
 	httpClient          *http.Client
 	dlmmBaseURL         string
-	dlmmLegacyBaseURL   string
 	dammv2BaseURL       string
 	dammv1BaseURL       string
 	stake2earnBaseURL   string
@@ -51,11 +49,6 @@ func WithHTTPClient(c *http.Client) Option {
 // WithDLMMBaseURL overrides the DLMM datapi base URL.
 func WithDLMMBaseURL(u string) Option {
 	return func(o *options) { o.dlmmBaseURL = u }
-}
-
-// WithDLMMLegacyBaseURL overrides the DLMM legacy API base URL.
-func WithDLMMLegacyBaseURL(u string) Option {
-	return func(o *options) { o.dlmmLegacyBaseURL = u }
 }
 
 // WithDAMMv2BaseURL overrides the DAMM v2 datapi base URL.
@@ -82,7 +75,6 @@ func WithDynamicVaultBaseURL(u string) Option {
 func New(opts ...Option) *Client {
 	o := &options{
 		dlmmBaseURL:         defaultDLMMBaseURL,
-		dlmmLegacyBaseURL:   defaultDLMMLegacyBaseURL,
 		dammv2BaseURL:       defaultDAMMv2BaseURL,
 		dammv1BaseURL:       defaultDAMMv1BaseURL,
 		stake2earnBaseURL:   defaultStake2EarnBaseURL,
@@ -95,7 +87,7 @@ func New(opts ...Option) *Client {
 	hc := o.httpClient
 
 	return &Client{
-		DLMM:         dlmm.NewClient(httpclient.New(o.dlmmBaseURL, hc), httpclient.New(o.dlmmLegacyBaseURL, hc)),
+		DLMM:         dlmm.NewClient(httpclient.New(o.dlmmBaseURL, hc)),
 		DAMMv2:       dammv2.NewClient(httpclient.New(o.dammv2BaseURL, hc)),
 		DAMMv1:       dammv1.NewClient(httpclient.New(o.dammv1BaseURL, hc)),
 		Stake2Earn:   stake2earn.NewClient(httpclient.New(o.stake2earnBaseURL, hc)),
