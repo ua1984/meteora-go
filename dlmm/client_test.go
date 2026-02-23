@@ -53,7 +53,7 @@ func (s *DLMMClientTestSuite) TestListPools() {
 		{
 			name: "should successfully list pools with params",
 			params: &dlmm.ListPoolsParams{
-				Page:  ptr(1),
+				Page:     ptr(1),
 				PageSize: ptr(10),
 			},
 			status: http.StatusOK,
@@ -261,7 +261,9 @@ func (s *DLMMClientTestSuite) TestGetOHLCV() {
 			name:    "should successfully get ohlcv with resolution",
 			address: "pool1",
 			params: &dlmm.OHLCVParams{
-				Timeframe: ptr("1H"),
+				TimeframeBasedParams: dlmm.TimeframeBasedParams{
+					Timeframe: ptr("1H"),
+				},
 			},
 			status: http.StatusOK,
 			response: dlmm.OHLCVResponse{
@@ -310,7 +312,9 @@ func (s *DLMMClientTestSuite) TestGetVolumeHistory() {
 			name:    "should successfully get volume history",
 			address: "poolX",
 			params: &dlmm.VolumeHistoryParams{
-				Timeframe: ptr("24h"),
+				TimeframeBasedParams: dlmm.TimeframeBasedParams{
+					Timeframe: ptr("24h"),
+				},
 			},
 			status: http.StatusOK,
 			response: dlmm.VolumeHistoryResponse{
