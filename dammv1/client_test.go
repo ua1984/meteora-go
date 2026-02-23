@@ -207,22 +207,46 @@ func (s *ClientTestSuite) TestListPoolsWithFarm() {
 }
 
 func (s *ClientTestSuite) TestListAlphaVaults() {
-	// Arrange
 	wantVaults := []dammv1.AlphaVault{
 		{VaultAddress: "vault1"},
 	}
 
-	server := s.setupTestServer(http.MethodGet, "/alpha-vault", http.StatusOK, wantVaults)
-	defer server.Close()
+	s.Run("should list alpha vaults without params", func() {
+		// Arrange
+		server := s.setupTestServer(http.MethodGet, "/alpha-vault", http.StatusOK, wantVaults)
+		defer server.Close()
 
-	client := dammv1.NewClient(httpclient.New(server.URL, nil))
+		client := dammv1.NewClient(httpclient.New(server.URL, nil))
 
-	// Act
-	vaults, err := client.ListAlphaVaults(context.TODO())
+		// Act
+		vaults, err := client.ListAlphaVaults(context.TODO(), nil)
 
-	// Assert
-	s.NoError(err)
-	s.Equal(wantVaults, vaults)
+		// Assert
+		s.NoError(err)
+		s.Equal(wantVaults, vaults)
+	})
+
+	s.Run("should list alpha vaults with filters", func() {
+		// Arrange
+		params := &dammv1.AlphaVaultParams{
+			VaultAddress: []string{"vault1"},
+			PoolAddress:  []string{"pool1"},
+			BaseMint:     []string{"mint1"},
+		}
+
+		wantURL := "/alpha-vault?base_mint=mint1&pool_address=pool1&vault_address=vault1"
+		server := s.setupTestServer(http.MethodGet, wantURL, http.StatusOK, wantVaults)
+		defer server.Close()
+
+		client := dammv1.NewClient(httpclient.New(server.URL, nil))
+
+		// Act
+		vaults, err := client.ListAlphaVaults(context.TODO(), params)
+
+		// Assert
+		s.NoError(err)
+		s.Equal(wantVaults, vaults)
+	})
 }
 
 func (s *ClientTestSuite) TestListAlphaVaultConfigs() {

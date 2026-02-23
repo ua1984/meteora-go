@@ -26,3 +26,15 @@ type PaginationParams struct {
 	// Size is the number of records per page.
 	Size *int `json:"size,omitempty"`
 }
+
+// AlphaVaultParams are optional filter parameters for the ListAlphaVaults method.
+type AlphaVaultParams struct {
+	// VaultAddress filters results to the specified vault addresses.
+	VaultAddress []string
+
+	// PoolAddress filters results to vaults associated with the specified pool addresses.
+	PoolAddress []string
+
+	// BaseMint filters results to vaults with the specified base mint addresses.
+	BaseMint []string
+}

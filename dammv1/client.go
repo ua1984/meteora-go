@@ -115,10 +115,27 @@ func (c *Client) ListPoolsWithFarm(ctx context.Context, params *PaginationParams
 	return pools, nil
 }
 
-// ListAlphaVaults returns all alpha vaults.
-func (c *Client) ListAlphaVaults(ctx context.Context) ([]AlphaVault, error) {
+// ListAlphaVaults returns alpha vaults, optionally filtered by vault address, pool address, or base mint.
+func (c *Client) ListAlphaVaults(ctx context.Context, params *AlphaVaultParams) ([]AlphaVault, error) {
+	var q url.Values
+	if params != nil {
+		q = url.Values{}
+		for _, v := range params.VaultAddress {
+			q.Add("vault_address", v)
+		}
+		for _, v := range params.PoolAddress {
+			q.Add("pool_address", v)
+		}
+		for _, v := range params.BaseMint {
+			q.Add("base_mint", v)
+		}
+		if len(q) == 0 {
+			q = nil
+		}
+	}
+
 	var vaults []AlphaVault
-	if err := c.http.Get(ctx, "/alpha-vault", nil, &vaults); err != nil {
+	if err := c.http.Get(ctx, "/alpha-vault", q, &vaults); err != nil {
 		return nil, fmt.Errorf("dammv1.ListAlphaVaults: %w", err)
 	}
 
