@@ -2,63 +2,186 @@ package dlmm
 
 // ListPoolsParams are optional query parameters for the ListPools method.
 type ListPoolsParams struct {
-	// Page is the 1-based page number to retrieve.
+	// Page is the page number (1-based).
 	Page *int `json:"page,omitempty"`
 
-	// Limit is the number of pools per page.
-	Limit *int `json:"limit,omitempty"`
+	// PageSize is the number of pools to return per page. Max 1000.
+	PageSize *int `json:"page_size,omitempty"`
 
-	// SortBy is the field name to sort results by (e.g., "tvl", "volume", "fees").
+	// Query is the search query used to match pools by name, tokens, or address.
+	Query *string `json:"query,omitempty"`
+
+	// FilterBy specifies the conditions to filter documents by field values.
+	//
+	// Format: <expr> [&& <expr> ...]
+	// Where each expression is: <field><op><value>
+	//
+	// Allowed fields:
+	// - Numeric: tvl, volume_*, fee_*, fee_tvl_ratio_*, apr_*
+	// - Boolean: is_blacklisted
+	// - Text: pool_address, name, token_x, token_y
+	//
+	// Operators:
+	// - Numeric: =, >, >=, <, <=
+	// - Boolean: =true, =false
+	// - Text:
+	//   - exact match: =<value>
+	//   - multi-value OR: =[value1|value2|...]
+	//
+	// Examples:
+	// - tvl>1000
+	// - is_blacklisted=false && volume_24h>=50000
+	FilterBy *string `json:"filter_by,omitempty"`
+
+	// SortBy is used to sort results by one or more fields.
+	//
+	// Format:
+	// - Time-windowed metrics: <metric>_<window>:<direction>
+	// - Non-windowed metrics: <field>:<direction>
+	//
+	// - direction: asc or desc
+	// - window (when applicable): 5m, 30m, 1h, 2h, 4h, 12h, 24h
+	//
+	// Available fields:
+	// - Time-windowed metrics: volume_*, fee_*, fee_tvl_ratio_*, apr_*
+	// - Non-windowed metrics: tvl, fee_pct, bin_step, pool_created_at, farm_apy
+	//
+	// Default: volume_24h:desc
+	//
+	// Examples:
+	// - volume_24h:desc
+	// - fee_1h:asc
+	// - tvl:desc
 	SortBy *string `json:"sort_by,omitempty"`
-
-	// SortOrder is the sort direction ("asc" or "desc").
-	SortOrder *string `json:"sort_order,omitempty"`
-
-	// SearchTerm filters pools by name, symbol, or address substring.
-	SearchTerm *string `json:"search_term,omitempty"`
-
-	// HideBlacklist excludes blacklisted pools from results when true.
-	HideBlacklist *bool `json:"hide_blacklist,omitempty"`
-
-	// IncludeTags filters pools to only include those with the specified tag.
-	IncludeTags *string `json:"include_tags,omitempty"`
-
-	// ExcludeTags filters pools to exclude those with the specified tag.
-	ExcludeTags *string `json:"exclude_tags,omitempty"`
 }
 
 // ListGroupsParams are optional query parameters for the ListGroups method.
 type ListGroupsParams struct {
-	// Page is the 1-based page number to retrieve.
+	// Page is the page number (1-based).
 	Page *int `json:"page,omitempty"`
 
-	// Limit is the number of groups per page.
-	Limit *int `json:"limit,omitempty"`
+	// PageSize is the number of pools to return per page. Max 100.
+	PageSize *int `json:"page_size,omitempty"`
 
-	// SortBy is the field name to sort results by.
+	// Query is the search query used to match pools by name, tokens, or address.
+	Query *string `json:"query,omitempty"`
+
+	// FilterBy specifies the conditions to filter documents by field values.
+	//
+	// Format: <expr> [&& <expr> ...]
+	// Where each expression is: <field><op><value>
+	//
+	// Allowed fields:
+	// - Numeric: tvl, volume_*, fee_*, fee_tvl_ratio_*, apr_*
+	// - Boolean: is_blacklisted
+	// - Text: pool_address, name, token_x, token_y
+	//
+	// Operators:
+	// - Numeric: =, >, >=, <, <=
+	// - Boolean: =true, =false
+	// - Text:
+	//   - exact match: =<value>
+	//   - multi-value OR: =[value1|value2|...]
+	//
+	// Examples:
+	// - tvl>1000
+	// - is_blacklisted=false && volume_24h>=50000
+	FilterBy *string `json:"filter_by,omitempty"`
+
+	// SortBy is used to sort results by one or more fields.
+	//
+	// Format:
+	// - Time-windowed metrics: <metric>_<window>:<direction>
+	// - Non-windowed metrics: <field>:<direction>
+	//
+	// - direction: asc or desc
+	// - window (when applicable): 5m, 30m, 1h, 2h, 4h, 12h, 24h
+	//
+	// Available fields:
+	// - Time-windowed metrics: volume_*, fee_*, fee_tvl_ratio_*, apr_*
+	// - Non-windowed metrics: tvl, fee_pct, bin_step, pool_created_at, farm_apy
+	//
+	// Default: volume_24h:desc
+	//
+	// Examples:
+	// - volume_24h:desc
+	// - fee_1h:asc
+	// - tvl:desc
 	SortBy *string `json:"sort_by,omitempty"`
 
-	// SortOrder is the sort direction ("asc" or "desc").
-	SortOrder *string `json:"sort_order,omitempty"`
+	// VolumeTW is the time window to aggregate volume. Returns sum. Default: volume_24h.
+	VolumeTW *string `json:"volume_tw,omitempty"`
 
-	// SearchTerm filters groups by name or token address substring.
-	SearchTerm *string `json:"search_term,omitempty"`
-
-	// HideBlacklist excludes groups containing only blacklisted pools when true.
-	HideBlacklist *bool `json:"hide_blacklist,omitempty"`
+	// FeeTVLRatioTW is the time window to aggregate fee TVL ratio. Returns Max. Default: fee_tvl_ratio_24h.
+	FeeTVLRatioTW *string `json:"fee_tvl_ratio_tw,omitempty"`
 }
 
 // GetGroupParams are optional query parameters for the GetGroup method.
 type GetGroupParams struct {
-	// Page is the 1-based page number to retrieve.
+	// Page is the page number (1-based).
 	Page *int `json:"page,omitempty"`
 
-	// Limit is the number of pools per page within the group.
-	Limit *int `json:"limit,omitempty"`
+	// PageSize is the number of pools to return per page. Max 100.
+	PageSize *int `json:"page_size,omitempty"`
 
-	// SortBy is the field name to sort pools by within the group.
+	// Query is the search query used to match pools by name, tokens, or address.
+	Query *string `json:"query,omitempty"`
+
+	// FilterBy specifies the conditions to filter documents by field values.
+	//
+	// Format: <expr> [&& <expr> ...]
+	// Where each expression is: <field><op><value>
+	//
+	// Allowed fields:
+	// - Numeric: tvl, volume_*, fee_*, fee_tvl_ratio_*, apr_*
+	// - Boolean: is_blacklisted
+	// - Text: pool_address, name, token_x, token_y
+	//
+	// Operators:
+	// - Numeric: =, >, >=, <, <=
+	// - Boolean: =true, =false
+	// - Text:
+	//   - exact match: =<value>
+	//   - multi-value OR: =[value1|value2|...]
+	//
+	// Examples:
+	// - tvl>1000
+	// - is_blacklisted=false && volume_24h>=50000
+	FilterBy *string `json:"filter_by,omitempty"`
+
+	// SortBy is used to sort results by one or more fields.
+	//
+	// Format:
+	// - Time-windowed metrics: <metric>_<window>:<direction>
+	// - Non-windowed metrics: <field>:<direction>
+	//
+	// - direction: asc or desc
+	// - window (when applicable): 5m, 30m, 1h, 2h, 4h, 12h, 24h
+	//
+	// Available fields:
+	// - Time-windowed metrics: volume_*, fee_*, fee_tvl_ratio_*, apr_*
+	// - Non-windowed metrics: tvl, fee_pct, bin_step, pool_created_at, farm_apy
+	//
+	// Default: volume_24h:desc
+	//
+	// Examples:
+	// - volume_24h:desc
+	// - fee_1h:asc
+	// - tvl:desc
 	SortBy *string `json:"sort_by,omitempty"`
+}
 
-	// SortOrder is the sort direction ("asc" or "desc").
-	SortOrder *string `json:"sort_order,omitempty"`
+// TimeframeBasedParams are optional query parameters for time-windowed metrics.
+type TimeframeBasedParams struct {
+	// Timeframe is the time period interval used for time-windowed metrics.
+	// Allowed values: 5m, 30m, 1h, 2h, 4h, 12h, 24h. Default: 24h.
+	Timeframe *string `json:"timeframe,omitempty"`
+
+	// StartTime is the Unix timestamp in seconds (inclusive).
+	// If omitted, the API uses a default range based on timeframe.
+	StartTime *int64 `json:"start_time,omitempty"`
+
+	// EndTime is the Unix timestamp in seconds (inclusive).
+	// If omitted, the API uses "now" as the end.
+	EndTime *int64 `json:"end_time,omitempty"`
 }

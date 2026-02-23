@@ -27,26 +27,17 @@ func (c *Client) ListPools(ctx context.Context, params *ListPoolsParams) (*Pagin
 		if params.Page != nil {
 			q.Set("page", strconv.Itoa(*params.Page))
 		}
-		if params.Limit != nil {
-			q.Set("limit", strconv.Itoa(*params.Limit))
+		if params.PageSize != nil {
+			q.Set("page_size", strconv.Itoa(*params.PageSize))
+		}
+		if params.Query != nil {
+			q.Set("query", *params.Query)
+		}
+		if params.FilterBy != nil {
+			q.Set("filter_by", *params.FilterBy)
 		}
 		if params.SortBy != nil {
 			q.Set("sort_by", *params.SortBy)
-		}
-		if params.SortOrder != nil {
-			q.Set("sort_order", *params.SortOrder)
-		}
-		if params.SearchTerm != nil {
-			q.Set("search_term", *params.SearchTerm)
-		}
-		if params.HideBlacklist != nil {
-			q.Set("hide_blacklist", strconv.FormatBool(*params.HideBlacklist))
-		}
-		if params.IncludeTags != nil {
-			q.Set("include_tags", *params.IncludeTags)
-		}
-		if params.ExcludeTags != nil {
-			q.Set("exclude_tags", *params.ExcludeTags)
 		}
 	}
 
@@ -65,20 +56,23 @@ func (c *Client) ListGroups(ctx context.Context, params *ListGroupsParams) (*Pag
 		if params.Page != nil {
 			q.Set("page", strconv.Itoa(*params.Page))
 		}
-		if params.Limit != nil {
-			q.Set("limit", strconv.Itoa(*params.Limit))
+		if params.PageSize != nil {
+			q.Set("page_size", strconv.Itoa(*params.PageSize))
+		}
+		if params.Query != nil {
+			q.Set("query", *params.Query)
+		}
+		if params.FilterBy != nil {
+			q.Set("filter_by", *params.FilterBy)
 		}
 		if params.SortBy != nil {
 			q.Set("sort_by", *params.SortBy)
 		}
-		if params.SortOrder != nil {
-			q.Set("sort_order", *params.SortOrder)
+		if params.VolumeTW != nil {
+			q.Set("volume_tw", *params.VolumeTW)
 		}
-		if params.SearchTerm != nil {
-			q.Set("search_term", *params.SearchTerm)
-		}
-		if params.HideBlacklist != nil {
-			q.Set("hide_blacklist", strconv.FormatBool(*params.HideBlacklist))
+		if params.FeeTVLRatioTW != nil {
+			q.Set("fee_tvl_ratio_tw", *params.FeeTVLRatioTW)
 		}
 	}
 
@@ -97,14 +91,17 @@ func (c *Client) GetGroup(ctx context.Context, lexicalOrderMints string, params 
 		if params.Page != nil {
 			q.Set("page", strconv.Itoa(*params.Page))
 		}
-		if params.Limit != nil {
-			q.Set("limit", strconv.Itoa(*params.Limit))
+		if params.PageSize != nil {
+			q.Set("page_size", strconv.Itoa(*params.PageSize))
+		}
+		if params.Query != nil {
+			q.Set("query", *params.Query)
+		}
+		if params.FilterBy != nil {
+			q.Set("filter_by", *params.FilterBy)
 		}
 		if params.SortBy != nil {
 			q.Set("sort_by", *params.SortBy)
-		}
-		if params.SortOrder != nil {
-			q.Set("sort_order", *params.SortOrder)
 		}
 	}
 
@@ -132,11 +129,14 @@ func (c *Client) GetPool(ctx context.Context, address string) (*Pool, error) {
 func (c *Client) GetOHLCV(ctx context.Context, address string, params *OHLCVParams) (*OHLCVResponse, error) {
 	q := url.Values{}
 	if params != nil {
-		if params.Resolution != nil {
-			q.Set("resolution", *params.Resolution)
+		if params.Timeframe != nil {
+			q.Set("timeframe", *params.Timeframe)
 		}
-		if params.Limit != nil {
-			q.Set("limit", strconv.Itoa(*params.Limit))
+		if params.StartTime != nil {
+			q.Set("start_time", strconv.FormatInt(*params.StartTime, 10))
+		}
+		if params.EndTime != nil {
+			q.Set("end_time", strconv.FormatInt(*params.EndTime, 10))
 		}
 	}
 
@@ -153,11 +153,14 @@ func (c *Client) GetOHLCV(ctx context.Context, address string, params *OHLCVPara
 func (c *Client) GetVolumeHistory(ctx context.Context, address string, params *VolumeHistoryParams) (*VolumeHistoryResponse, error) {
 	q := url.Values{}
 	if params != nil {
-		if params.Resolution != nil {
-			q.Set("resolution", *params.Resolution)
+		if params.Timeframe != nil {
+			q.Set("timeframe", *params.Timeframe)
 		}
-		if params.Limit != nil {
-			q.Set("limit", strconv.Itoa(*params.Limit))
+		if params.StartTime != nil {
+			q.Set("start_time", strconv.FormatInt(*params.StartTime, 10))
+		}
+		if params.EndTime != nil {
+			q.Set("end_time", strconv.FormatInt(*params.EndTime, 10))
 		}
 	}
 

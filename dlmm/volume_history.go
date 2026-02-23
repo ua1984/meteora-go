@@ -35,9 +35,5 @@ type VolumeHistoryResponse struct {
 
 // VolumeHistoryParams are optional query parameters for the GetVolumeHistory method.
 type VolumeHistoryParams struct {
-	// Resolution is the data point timeframe (e.g., "1m", "5m", "15m", "1h", "4h", "1d").
-	Resolution *string `json:"resolution,omitempty"`
-
-	// Limit is the maximum number of data points to return.
-	Limit *int `json:"limit,omitempty"`
+	TimeframeBasedParams
 }

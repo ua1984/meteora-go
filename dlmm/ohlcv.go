@@ -42,9 +42,5 @@ type OHLCVResponse struct {
 
 // OHLCVParams are optional query parameters for the GetOHLCV method.
 type OHLCVParams struct {
-	// Resolution is the candle timeframe (e.g., "1m", "5m", "15m", "1h", "4h", "1d").
-	Resolution *string `json:"resolution,omitempty"`
-
-	// Limit is the maximum number of candles to return.
-	Limit *int `json:"limit,omitempty"`
+	TimeframeBasedParams
 }

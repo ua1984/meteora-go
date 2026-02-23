@@ -54,13 +54,13 @@ func (s *DLMMClientTestSuite) TestListPools() {
 			name: "should successfully list pools with params",
 			params: &dlmm.ListPoolsParams{
 				Page:  ptr(1),
-				Limit: ptr(10),
+				PageSize: ptr(10),
 			},
 			status: http.StatusOK,
 			response: dlmm.PaginatedResponse[dlmm.Pool]{
 				Data: []dlmm.Pool{{Address: "pool1"}},
 			},
-			wantURL: "/pools?limit=10&page=1",
+			wantURL: "/pools?page=1&page_size=10",
 			wantResult: &dlmm.PaginatedResponse[dlmm.Pool]{
 				Data: []dlmm.Pool{{Address: "pool1"}},
 			},
@@ -171,13 +171,13 @@ func (s *DLMMClientTestSuite) TestGetGroup() {
 			name:              "should successfully get group",
 			lexicalOrderMints: "mint1-mint2",
 			params: &dlmm.GetGroupParams{
-				Limit: ptr(5),
+				PageSize: ptr(5),
 			},
 			status: http.StatusOK,
 			response: dlmm.PaginatedResponse[dlmm.Pool]{
 				Data: []dlmm.Pool{{Address: "poolA"}},
 			},
-			wantURL: "/pools/groups/mint1-mint2?limit=5",
+			wantURL: "/pools/groups/mint1-mint2?page_size=5",
 			wantResult: &dlmm.PaginatedResponse[dlmm.Pool]{
 				Data: []dlmm.Pool{{Address: "poolA"}},
 			},
@@ -261,13 +261,13 @@ func (s *DLMMClientTestSuite) TestGetOHLCV() {
 			name:    "should successfully get ohlcv with resolution",
 			address: "pool1",
 			params: &dlmm.OHLCVParams{
-				Resolution: ptr("1H"),
+				Timeframe: ptr("1H"),
 			},
 			status: http.StatusOK,
 			response: dlmm.OHLCVResponse{
 				Data: []dlmm.OHLCV{{Timestamp: 1000}},
 			},
-			wantURL: "/pools/pool1/ohlcv?resolution=1H",
+			wantURL: "/pools/pool1/ohlcv?timeframe=1H",
 			wantResult: &dlmm.OHLCVResponse{
 				Data: []dlmm.OHLCV{{Timestamp: 1000}},
 			},
@@ -310,13 +310,13 @@ func (s *DLMMClientTestSuite) TestGetVolumeHistory() {
 			name:    "should successfully get volume history",
 			address: "poolX",
 			params: &dlmm.VolumeHistoryParams{
-				Limit: ptr(20),
+				Timeframe: ptr("24h"),
 			},
 			status: http.StatusOK,
 			response: dlmm.VolumeHistoryResponse{
 				Data: []dlmm.VolumeHistory{{Timestamp: 2000}},
 			},
-			wantURL: "/pools/poolX/volume/history?limit=20",
+			wantURL: "/pools/poolX/volume/history?page_size=20",
 			wantResult: &dlmm.VolumeHistoryResponse{
 				Data: []dlmm.VolumeHistory{{Timestamp: 2000}},
 			},

@@ -17,8 +17,8 @@ func main() {
 
 	// List DLMM pools
 	pools, err := client.DLMM.ListPools(ctx, &dlmm.ListPoolsParams{
-		Page:  meteora.Int(1),
-		Limit: meteora.Int(5),
+		Page:     meteora.Int(1),
+		PageSize: meteora.Int(5),
 	})
 	if err != nil {
 		log.Fatalf("ListPools: %v", err)

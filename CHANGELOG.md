@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] - TBD
 
+### Fixed
+
+- Incorrect parameters for all available DLMM endpoints
+
 ## [1.1.0] - 2026-02-17
 
 ### Added
