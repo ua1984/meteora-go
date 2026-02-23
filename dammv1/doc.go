@@ -17,7 +17,7 @@
 //   - GET /farm: List pools with active farming programs.
 //   - GET /alpha-vault: List all alpha vaults.
 //   - GET /alpha-vault-configs: List alpha vault configurations (prorata and FCFS).
-//   - POST /get_pools_by_a_vault_lp: Find pools by vault LP address.
+//   - POST /pools_by_a_vault_lp: Find pools by vault LP address.
 //
 // # Usage
 //

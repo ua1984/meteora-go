@@ -305,7 +305,7 @@ func (s *ClientTestSuite) TestGetPoolsByVaultLP() {
 		{PoolAddress: "pool1"},
 	}
 
-	server := s.setupTestServer(http.MethodPost, "/get_pools_by_a_vault_lp?address="+address, http.StatusOK, wantPools)
+	server := s.setupTestServer(http.MethodPost, "/pools_by_a_vault_lp?address="+address, http.StatusOK, wantPools)
 	defer server.Close()
 
 	client := dammv1.NewClient(httpclient.New(server.URL, nil))

@@ -205,7 +205,7 @@ func (c *Client) GetPoolsByVaultLP(ctx context.Context, address string) ([]Pool,
 	q.Set("address", address)
 
 	var pools []Pool
-	if err := c.http.Post(ctx, "/get_pools_by_a_vault_lp", q, &pools); err != nil {
+	if err := c.http.Post(ctx, "/pools_by_a_vault_lp", q, &pools); err != nil {
 		return nil, fmt.Errorf("dammv1.GetPoolsByVaultLP: %w", err)
 	}
 
