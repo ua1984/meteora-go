@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] - TBD
 
-## [2.0.0] - 2026-02-23
+## [1.2.0] - 2026-02-23
 
 ### Added
 
@@ -56,6 +56,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Refactored client test files to use external test packages for better encapsulation
 
-[2.0.0]: https://github.com/ua1984/meteora-go/compare/v1.1.0...v2.0.0
+[1.2.0]: https://github.com/ua1984/meteora-go/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/ua1984/meteora-go/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/ua1984/meteora-go/commit/7fcde5e295143aca2565a255337cc4bd2ba9e73a

@@ -13,7 +13,7 @@ Go client library for the [Meteora](https://meteora.ag) REST APIs. Covers all fi
 go get github.com/ua1984/meteora-go
 ```
 
-> **Note:** Versions below `v2.0.0` contain known issues and should be avoided. Always use `v2.0.0` or later.
+> **Note:** Versions below `v1.2.0` contain known issues and should be avoided. Always use `v1.2.0` or later.
 
 ## Quick Start
 
