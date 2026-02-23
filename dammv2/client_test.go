@@ -365,6 +365,168 @@ func (s *DammV2ClientTestSuite) TestGetProtocolMetrics() {
 	}
 }
 
+func (s *DammV2ClientTestSuite) TestGetClosedPositions() {
+	tests := []struct {
+		name       string
+		wallet     string
+		params     *dammv2.GetClosedPositionsParams
+		response   any
+		status     int
+		wantErr    bool
+		wantURL    string
+		wantResult int
+	}{
+		{
+			name:   "should successfully get closed positions",
+			wallet: "wallet123",
+			params: &dammv2.GetClosedPositionsParams{
+				Limit: ptr(10),
+			},
+			response: dammv2.CursorPaginatedResponse[dammv2.ClosedPosition]{
+				Limit: 10,
+				Data: []dammv2.ClosedPosition{
+					{PositionAddress: "pos1", PoolAddress: "pool1"},
+					{PositionAddress: "pos2", PoolAddress: "pool2"},
+				},
+			},
+			status:     http.StatusOK,
+			wantURL:    "/wallets/wallet123/closed_positions?limit=10",
+			wantResult: 2,
+		},
+		{
+			name:   "should pass all query params",
+			wallet: "wallet456",
+			params: &dammv2.GetClosedPositionsParams{
+				Limit:      ptr(5),
+				NextCursor: ptr("cursor123"),
+				Pool:       ptr("poolABC"),
+			},
+			response: dammv2.CursorPaginatedResponse[dammv2.ClosedPosition]{
+				Limit:      5,
+				NextCursor: ptr("nextCursor"),
+				Data:       []dammv2.ClosedPosition{{PositionAddress: "pos3"}},
+			},
+			status:     http.StatusOK,
+			wantURL:    "/wallets/wallet456/closed_positions?limit=5&next_cursor=cursor123&pool=poolABC",
+			wantResult: 1,
+		},
+		{
+			name:    "should return error on API failure",
+			wallet:  "wallet123",
+			status:  http.StatusBadRequest,
+			response: `{"message": "invalid wallet"}`,
+			wantErr: true,
+			wantURL: "/wallets/wallet123/closed_positions",
+		},
+	}
+
+	for _, tt := range tests {
+		s.Run(tt.name, func() {
+			// Arrange
+			server := s.setupTestServer(http.MethodGet, tt.wantURL, tt.status, tt.response)
+			defer server.Close()
+
+			httpClient := httpclient.New(server.URL, nil)
+			client := dammv2.NewClient(httpClient)
+
+			// Act
+			resp, err := client.GetClosedPositions(context.TODO(), tt.wallet, tt.params)
+
+			// Assert
+			if tt.wantErr {
+				s.Error(err)
+				s.Nil(resp)
+			} else {
+				s.NoError(err)
+				s.NotNil(resp)
+				s.Len(resp.Data, tt.wantResult)
+			}
+		})
+	}
+}
+
+func (s *DammV2ClientTestSuite) TestGetOpenPositions() {
+	tests := []struct {
+		name       string
+		wallet     string
+		params     *dammv2.GetOpenPositionsParams
+		response   any
+		status     int
+		wantErr    bool
+		wantURL    string
+		wantResult int
+	}{
+		{
+			name:   "should successfully get open positions",
+			wallet: "wallet123",
+			response: dammv2.OpenPositionsResponse{
+				TotalPositions: 2,
+				TotalPools:     1,
+				Data: []dammv2.PositionsByPool{
+					{
+						PoolAddress: "pool1",
+						Name:        "SOL-USDC",
+						Positions: []dammv2.OpenPosition{
+							{PositionAddress: "pos1"},
+							{PositionAddress: "pos2"},
+						},
+					},
+				},
+			},
+			status:     http.StatusOK,
+			wantURL:    "/wallets/wallet123/open_positions",
+			wantResult: 1,
+		},
+		{
+			name:   "should pass pool filter param",
+			wallet: "wallet456",
+			params: &dammv2.GetOpenPositionsParams{
+				Pool: ptr("pool1,pool2"),
+			},
+			response: dammv2.OpenPositionsResponse{
+				TotalPositions: 1,
+				TotalPools:     1,
+				Data:           []dammv2.PositionsByPool{{PoolAddress: "pool1"}},
+			},
+			status:     http.StatusOK,
+			wantURL:    "/wallets/wallet456/open_positions?pool=pool1%2Cpool2",
+			wantResult: 1,
+		},
+		{
+			name:     "should return error on API failure",
+			wallet:   "wallet123",
+			status:   http.StatusBadRequest,
+			response: `{"message": "invalid wallet"}`,
+			wantErr:  true,
+			wantURL:  "/wallets/wallet123/open_positions",
+		},
+	}
+
+	for _, tt := range tests {
+		s.Run(tt.name, func() {
+			// Arrange
+			server := s.setupTestServer(http.MethodGet, tt.wantURL, tt.status, tt.response)
+			defer server.Close()
+
+			httpClient := httpclient.New(server.URL, nil)
+			client := dammv2.NewClient(httpClient)
+
+			// Act
+			resp, err := client.GetOpenPositions(context.TODO(), tt.wallet, tt.params)
+
+			// Assert
+			if tt.wantErr {
+				s.Error(err)
+				s.Nil(resp)
+			} else {
+				s.NoError(err)
+				s.NotNil(resp)
+				s.Len(resp.Data, tt.wantResult)
+			}
+		})
+	}
+}
+
 func ptr[T any](v T) *T {
 	return &v
 }

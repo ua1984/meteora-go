@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added DLMM portfolio endpoints: `/portfolio`, `/portfolio/open`, and `/portfolio/total`
 - Added DLMM positions endpoints: `/positions/{address}/historical`, `/positions/{address}/total_claim_fees`, and `/positions/{pool_address}/pnl`
 - Added DLMM wallet endpoints: `/wallets/{wallet}/closed_positions` and `/wallets/{wallet}/open_positions`
+- Added DAMM v2 wallet endpoints: `/wallets/{wallet}/closed_positions` and `/wallets/{wallet}/open_positions`
 
 ### Changed
 

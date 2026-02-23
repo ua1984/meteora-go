@@ -172,6 +172,54 @@ func (c *Client) GetVolumeHistory(ctx context.Context, address string, params *V
 	return &resp, nil
 }
 
+// GetClosedPositions returns a cursor-paginated list of closed positions for a wallet.
+func (c *Client) GetClosedPositions(ctx context.Context, wallet string, params *GetClosedPositionsParams) (*CursorPaginatedResponse[ClosedPosition], error) {
+	q := url.Values{}
+	if params != nil {
+		if params.StartTime != nil {
+			q.Set("start_time", strconv.FormatInt(*params.StartTime, 10))
+		}
+		if params.EndTime != nil {
+			q.Set("end_time", strconv.FormatInt(*params.EndTime, 10))
+		}
+		if params.Limit != nil {
+			q.Set("limit", strconv.Itoa(*params.Limit))
+		}
+		if params.NextCursor != nil {
+			q.Set("next_cursor", *params.NextCursor)
+		}
+		if params.Pool != nil {
+			q.Set("pool", *params.Pool)
+		}
+	}
+
+	path := fmt.Sprintf("/wallets/%s/closed_positions", wallet)
+	var resp CursorPaginatedResponse[ClosedPosition]
+	if err := c.http.Get(ctx, path, q, &resp); err != nil {
+		return nil, fmt.Errorf("dammv2.GetClosedPositions: %w", err)
+	}
+
+	return &resp, nil
+}
+
+// GetOpenPositions returns all open positions grouped by pool for a wallet.
+func (c *Client) GetOpenPositions(ctx context.Context, wallet string, params *GetOpenPositionsParams) (*OpenPositionsResponse, error) {
+	q := url.Values{}
+	if params != nil {
+		if params.Pool != nil {
+			q.Set("pool", *params.Pool)
+		}
+	}
+
+	path := fmt.Sprintf("/wallets/%s/open_positions", wallet)
+	var resp OpenPositionsResponse
+	if err := c.http.Get(ctx, path, q, &resp); err != nil {
+		return nil, fmt.Errorf("dammv2.GetOpenPositions: %w", err)
+	}
+
+	return &resp, nil
+}
+
 // GetProtocolMetrics returns protocol-wide metrics.
 func (c *Client) GetProtocolMetrics(ctx context.Context) (*ProtocolMetrics, error) {
 	var metrics ProtocolMetrics

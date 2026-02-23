@@ -81,6 +81,31 @@ type ListGroupsParams struct {
 	FeeTVLRatioTW *string `json:"fee_tvl_ratio_tw,omitempty"`
 }
 
+// GetClosedPositionsParams are optional query parameters for the GetClosedPositions method.
+type GetClosedPositionsParams struct {
+	// StartTime is the Unix timestamp (seconds, inclusive) for the start of the time range.
+	StartTime *int64 `json:"start_time,omitempty"`
+
+	// EndTime is the Unix timestamp (seconds, inclusive) for the end of the time range.
+	EndTime *int64 `json:"end_time,omitempty"`
+
+	// Limit is the number of positions to return. Default 10, max 100.
+	Limit *int `json:"limit,omitempty"`
+
+	// NextCursor is the pagination cursor returned by a previous call.
+	NextCursor *string `json:"next_cursor,omitempty"`
+
+	// Pool filters results to positions in the specified pool address.
+	Pool *string `json:"pool,omitempty"`
+}
+
+// GetOpenPositionsParams are optional query parameters for the GetOpenPositions method.
+type GetOpenPositionsParams struct {
+	// Pool is an optional comma-separated list of pool addresses to filter positions.
+	// Maximum of 50 pool addresses allowed.
+	Pool *string `json:"pool,omitempty"`
+}
+
 // GetGroupParams are optional query parameters for the GetGroup method.
 type GetGroupParams struct {
 	// Page is the page number (1-based).
