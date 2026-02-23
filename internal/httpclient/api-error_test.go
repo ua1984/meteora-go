@@ -33,6 +33,18 @@ func TestAPIError_Error(t *testing.T) {
 			body:   `{"error":"bad request"}`,
 			want:   `meteora API error: status 400: {"error":"bad request"}`,
 		},
+		{
+			name:   "should extract message field from API error JSON",
+			status: 400,
+			body:   `{"message":"invalid pool address"}`,
+			want:   `meteora API error: status 400: invalid pool address`,
+		},
+		{
+			name:   "should extract message field from API error JSON with extra fields",
+			status: 422,
+			body:   `{"message":"page must be >= 1","code":422}`,
+			want:   `meteora API error: status 422: page must be >= 1`,
+		},
 	}
 
 	for _, tt := range tests {

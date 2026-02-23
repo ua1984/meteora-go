@@ -17,7 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Incorrect parameters for all available DLMM endpoints
+- DLMM endpoints now use correct parameters
+- API error responses now correctly parse the `{"message": "..."}` JSON body instead of returning the raw body string
 
 ## [1.1.0] - 2026-02-17
 
