@@ -13,6 +13,8 @@ Go client library for the [Meteora](https://meteora.ag) REST APIs. Covers all fi
 go get github.com/ua1984/meteora-go
 ```
 
+> **Note:** Versions below `v2.0.0` contain known issues and should be avoided. Always use `v2.0.0` or later.
+
 ## Quick Start
 
 ```go
@@ -31,10 +33,10 @@ func main() {
 	client := meteora.New()
 	ctx := context.Background()
 
-	page, limit := 1, 5
+	page, pageSize := 1, 5
 	pools, err := client.DLMM.ListPools(ctx, &dlmm.ListPoolsParams{
-		Page:  &page,
-		Limit: &limit,
+		Page:     &page,
+		PageSize: &pageSize,
 	})
 	if err != nil {
 		log.Fatal(err)
@@ -62,17 +64,24 @@ The unified `meteora.Client` exposes five service clients:
 
 ### DLMM
 
-Base URLs: `https://dlmm.datapi.meteora.ag` (30 req/s), `https://dlmm-api.meteora.ag` (30 req/s legacy)
+Base URL: `https://dlmm.datapi.meteora.ag` (30 req/s)
 
 ```go
-client.DLMM.ListPools(ctx, params)           // Paginated pool listing with search/sort/filter
-client.DLMM.ListGroups(ctx, params)           // Pool groups by token pair
-client.DLMM.GetGroup(ctx, mints, params)      // Pools in a specific group
-client.DLMM.GetPool(ctx, address)             // Single pool by address
-client.DLMM.GetOHLCV(ctx, address, params)    // Candlestick data (1m, 5m, 15m, 1h, 4h, 1d)
-client.DLMM.GetVolumeHistory(ctx, addr, p)    // Volume history
-client.DLMM.GetProtocolMetrics(ctx)           // Protocol-wide stats (TVL, volume, fees)
-client.DLMM.ListAllPairs(ctx)                 // Legacy flat pair listing
+client.DLMM.ListPools(ctx, params)                           // Paginated pool listing with search/sort/filter
+client.DLMM.ListGroups(ctx, params)                          // Pool groups by token pair
+client.DLMM.GetGroup(ctx, mints, params)                     // Pools in a specific group
+client.DLMM.GetPool(ctx, address)                            // Single pool by address
+client.DLMM.GetOHLCV(ctx, address, params)                   // Candlestick data (1m, 5m, 15m, 1h, 4h, 1d)
+client.DLMM.GetVolumeHistory(ctx, addr, params)              // Volume history
+client.DLMM.GetProtocolMetrics(ctx)                          // Protocol-wide stats (TVL, volume, fees)
+client.DLMM.GetClosedPositions(ctx, wallet, params)          // Closed positions for a wallet
+client.DLMM.GetOpenPositions(ctx, wallet, params)            // Open positions grouped by pool for a wallet
+client.DLMM.GetPositionHistoricalEvents(ctx, address, params) // Historical events for a position
+client.DLMM.GetPositionTotalClaimFees(ctx, address)          // Total claim fees for a position
+client.DLMM.GetPoolPositionPnL(ctx, poolAddress, params)     // Positions with PnL for a pool
+client.DLMM.GetPortfolio(ctx, params)                        // User portfolio with pool metadata and PnL
+client.DLMM.GetOpenPortfolio(ctx, params)                    // User open portfolio with balances
+client.DLMM.GetPortfolioTotal(ctx, user)                     // All-time total PnL across user's pools
 ```
 
 ### DAMM v2
@@ -80,13 +89,15 @@ client.DLMM.ListAllPairs(ctx)                 // Legacy flat pair listing
 Base URL: `https://damm-v2.datapi.meteora.ag` (10 req/s)
 
 ```go
-client.DAMMv2.ListPools(ctx, params)          // Paginated pool listing
-client.DAMMv2.ListGroups(ctx, params)         // Pool groups by token pair
-client.DAMMv2.GetGroup(ctx, mints, params)    // Pools in a specific group
-client.DAMMv2.GetPool(ctx, address)           // Single pool by address
-client.DAMMv2.GetOHLCV(ctx, address, params)  // Candlestick data
-client.DAMMv2.GetVolumeHistory(ctx, addr, p)  // Volume history
-client.DAMMv2.GetProtocolMetrics(ctx)         // Protocol-wide stats
+client.DAMMv2.ListPools(ctx, params)                        // Paginated pool listing
+client.DAMMv2.ListGroups(ctx, params)                       // Pool groups by token pair
+client.DAMMv2.GetGroup(ctx, mints, params)                  // Pools in a specific group
+client.DAMMv2.GetPool(ctx, address)                         // Single pool by address
+client.DAMMv2.GetOHLCV(ctx, address, params)                // Candlestick data
+client.DAMMv2.GetVolumeHistory(ctx, addr, params)           // Volume history
+client.DAMMv2.GetProtocolMetrics(ctx)                       // Protocol-wide stats
+client.DAMMv2.GetClosedPositions(ctx, wallet, params)       // Closed positions for a wallet
+client.DAMMv2.GetOpenPositions(ctx, wallet, params)         // Open positions grouped by pool for a wallet
 ```
 
 ### DAMM v1
@@ -94,14 +105,14 @@ client.DAMMv2.GetProtocolMetrics(ctx)         // Protocol-wide stats
 Base URL: `https://amm-v2.meteora.ag` (10 req/s)
 
 ```go
-client.DAMMv1.ListPools(ctx, address)         // All pools, optionally filtered by address
-client.DAMMv1.SearchPools(ctx, params)        // Search with pagination and sorting
-client.DAMMv1.GetPoolsMetrics(ctx)            // Protocol-level aggregate metrics
-client.DAMMv1.ListPoolConfigs(ctx)            // All pool configurations
-client.DAMMv1.GetFeeConfig(ctx, configAddr)   // Fee config by address
-client.DAMMv1.ListPoolsWithFarm(ctx, params)  // Pools with active farming
-client.DAMMv1.ListAlphaVaults(ctx)            // All alpha vaults
-client.DAMMv1.ListAlphaVaultConfigs(ctx)      // Alpha vault configs (prorata and FCFS)
+client.DAMMv1.ListPools(ctx, params)           // All pools with optional filtering
+client.DAMMv1.SearchPools(ctx, params)         // Search with required pagination and filtering/sorting
+client.DAMMv1.GetPoolsMetrics(ctx)             // Protocol-level aggregate metrics
+client.DAMMv1.ListPoolConfigs(ctx)             // All pool configurations
+client.DAMMv1.GetFeeConfig(ctx, configAddr)    // Fee config by address
+client.DAMMv1.ListPoolsWithFarm(ctx, params)   // Pools with active farming
+client.DAMMv1.ListAlphaVaults(ctx, params)     // Alpha vaults, optionally filtered by vault/pool address or base mint
+client.DAMMv1.ListAlphaVaultConfigs(ctx)       // Alpha vault configs (prorata and FCFS)
 client.DAMMv1.GetPoolsByVaultLP(ctx, address)  // Pools by vault LP address
 ```
 
@@ -112,7 +123,7 @@ Base URL: `https://stake-for-fee-api.meteora.ag`
 ```go
 client.Stake2Earn.GetAnalytics(ctx)           // Protocol-wide stats
 client.Stake2Earn.ListVaults(ctx)             // All vaults
-client.Stake2Earn.FilterVaults(ctx, params)   // Search/sort/paginate vaults
+client.Stake2Earn.FilterVaults(ctx, params)   // Filter vaults by pool addresses
 client.Stake2Earn.GetVault(ctx, address)      // Single vault by address
 ```
 
@@ -147,7 +158,7 @@ client := meteora.New(
 )
 ```
 
-Available options: `WithHTTPClient`, `WithDLMMBaseURL`, `WithDLMMLegacyBaseURL`, `WithDAMMv2BaseURL`, `WithDAMMv1BaseURL`, `WithStake2EarnBaseURL`, `WithDynamicVaultBaseURL`.
+Available options: `WithHTTPClient`, `WithDLMMBaseURL`, `WithDAMMv2BaseURL`, `WithDAMMv1BaseURL`, `WithStake2EarnBaseURL`, `WithDynamicVaultBaseURL`.
 
 ## Error Handling
 
