@@ -35,9 +35,15 @@ type VolumeHistoryResponse struct {
 
 // VolumeHistoryParams are optional query parameters for the GetVolumeHistory method.
 type VolumeHistoryParams struct {
-	// Resolution is the data point timeframe (e.g., "1m", "5m", "15m", "1h", "4h", "1d").
-	Resolution *string `json:"resolution,omitempty"`
+	// Timeframe is the time bucket interval. Allowed values: 5m 30m 1h 2h 4h 12h 24h.
+	// If omitted, the API uses 24h.
+	Timeframe *string `json:"timeframe,omitempty"`
 
-	// Limit is the maximum number of data points to return.
-	Limit *int `json:"limit,omitempty"`
+	// StartTime is the Unix timestamp in seconds (inclusive).
+	// If omitted, the API uses a default range based on Timeframe.
+	StartTime *int64 `json:"start_time,omitempty"`
+
+	// EndTime is the Unix timestamp in seconds (inclusive).
+	// If omitted, the API uses "now" as the end.
+	EndTime *int64 `json:"end_time,omitempty"`
 }

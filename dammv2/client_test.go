@@ -48,10 +48,9 @@ func (s *DammV2ClientTestSuite) TestListPools() {
 		{
 			name: "should successfully list pools with params",
 			params: &dammv2.ListPoolsParams{
-				Page:      ptr(1),
-				Limit:     ptr(10),
-				SortBy:    ptr("tvl"),
-				SortOrder: ptr("desc"),
+				Page:     ptr(1),
+				PageSize: ptr(10),
+				SortBy:   ptr("tvl"),
 			},
 			response: dammv2.PaginatedResponse[dammv2.Pool]{
 				Data:        []dammv2.Pool{{Address: "pool1"}, {Address: "pool2"}},
@@ -60,7 +59,7 @@ func (s *DammV2ClientTestSuite) TestListPools() {
 				PageSize:    10,
 			},
 			status:     http.StatusOK,
-			wantURL:    "/pools?limit=10&page=1&sort_by=tvl&sort_order=desc",
+			wantURL:    "/pools?page=1&page_size=10&sort_by=tvl",
 			wantResult: 2,
 		},
 		{
@@ -248,13 +247,13 @@ func (s *DammV2ClientTestSuite) TestGetOHLCV() {
 			name:    "should successfully get OHLCV",
 			address: "pool123",
 			params: &dammv2.OHLCVParams{
-				Resolution: ptr("1H"),
+				Timeframe: ptr("1h"),
 			},
 			response: dammv2.OHLCVResponse{
 				Data: []dammv2.OHLCV{{Timestamp: 123456}},
 			},
 			status:  http.StatusOK,
-			wantURL: "/pools/pool123/ohlcv?resolution=1H",
+			wantURL: "/pools/pool123/ohlcv?timeframe=1h",
 		},
 	}
 
