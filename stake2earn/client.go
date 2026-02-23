@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/url"
-	"strconv"
 
 	"github.com/ua1984/meteora-go/internal/httpclient"
 )
@@ -41,22 +40,14 @@ func (c *Client) ListVaults(ctx context.Context) (*VaultListResponse, error) {
 
 // FilterVaults returns filtered and paginated vaults.
 func (c *Client) FilterVaults(ctx context.Context, params *FilterParams) (*VaultListResponse, error) {
-	q := url.Values{}
+	var q url.Values
 	if params != nil {
-		if params.Page != nil {
-			q.Set("page", strconv.Itoa(*params.Page))
+		q = url.Values{}
+		for _, addr := range params.PoolAddresses {
+			q.Add("pool_address", addr)
 		}
-		if params.Size != nil {
-			q.Set("size", strconv.Itoa(*params.Size))
-		}
-		if params.SortBy != nil {
-			q.Set("sort_by", *params.SortBy)
-		}
-		if params.SortOrder != nil {
-			q.Set("sort_order", *params.SortOrder)
-		}
-		if params.SearchTerm != nil {
-			q.Set("search_term", *params.SearchTerm)
+		if len(q) == 0 {
+			q = nil
 		}
 	}
 

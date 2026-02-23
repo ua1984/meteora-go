@@ -146,21 +146,24 @@ func (s *Stake2EarnClientTestSuite) TestFilterVaults() {
 		wantResult int
 	}{
 		{
-			name: "should successfully filter vaults with params",
+			name: "should successfully filter vaults with pool addresses",
 			params: &stake2earn.FilterParams{
-				Page:       ptr(1),
-				Size:       ptr(10),
-				SortBy:     ptr("total_staked_amount_usd"),
-				SortOrder:  ptr("desc"),
-				SearchTerm: ptr("SOL"),
+				PoolAddresses: []string{"pool1", "pool2"},
 			},
 			response: stake2earn.VaultListResponse{
-				Total: 1,
-				Data:  []stake2earn.Vault{{VaultAddress: "vault1"}},
+				Total: 2,
+				Data:  []stake2earn.Vault{{VaultAddress: "vault1"}, {VaultAddress: "vault2"}},
 			},
 			status:     http.StatusOK,
-			wantURL:    "/vault/filter?page=1&search_term=SOL&size=10&sort_by=total_staked_amount_usd&sort_order=desc",
-			wantResult: 1,
+			wantURL:    "/vault/filter?pool_address=pool1&pool_address=pool2",
+			wantResult: 2,
+		},
+		{
+			name:    "should successfully filter vaults with no params",
+			params:  nil,
+			response: stake2earn.VaultListResponse{Total: 0, Data: []stake2earn.Vault{}},
+			status:  http.StatusOK,
+			wantURL: "/vault/filter",
 		},
 	}
 
@@ -228,8 +231,4 @@ func (s *Stake2EarnClientTestSuite) TestGetVault() {
 			}
 		})
 	}
-}
-
-func ptr[T any](v T) *T {
-	return &v
 }

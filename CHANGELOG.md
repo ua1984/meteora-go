@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - DLMM endpoints now use correct parameters
 - DAMM v2 endpoints now use correct parameters
 - DAMM v1 endpoints now use correct parameters
+- Stake2Earn endpoints now use correct parameters
 - API error responses now correctly parse the `{"message": "..."}` JSON body instead of returning the raw body string
 
 ## [1.1.0] - 2026-02-17
